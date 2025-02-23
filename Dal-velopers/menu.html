@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Central Perk - Coffee Website</title>
+  <!-- Added CSS for simple masking animation and logo styling -->
+  <style>
+    .mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #fff;
+      z-index: 9999;
+      animation: maskFade 1.5s ease forwards;
+    }
+
+    @keyframes maskFade {
+      from {
+        opacity: 1;
+      }
+
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    /* Logo container styling for a perfect circle and centered image */
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+  <!-- Font imports -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <!-- Mask overlay for initial page load -->
+  <div class="mask"></div>
+  <div class="top-bar">
+    <a href="index.html">
+      <div class="logo">
+        <img src="./images/logo.jpg" alt="logo">
+      </div>
+    </a>
+    <a href="index.html" class="brand-name"
+      style="margin-left: 10px; text-decoration: none; color: inherit; font-family: 'Playfair Display', serif;">Central
+      Perk</a>
+  </div>
+  <nav class="nav-bar">
+    <div class="nav-links">
+      <!-- Changed from div to anchor tag with link to menu.html -->
+      <a href="menu.html" class="nav-link" style="text-decoration: none; color: inherit;">
+        <i class="fas fa-mug-hot"></i> Menu
+      </a>
+      <!-- Changed from div to anchor tag with link to seat.html -->
+      <a href="seat.html" class="nav-link" style="text-decoration: none; color: inherit;">
+        <i class="fas fa-chair"></i> Seats
+      </a>
+      <!-- Changed from div to anchor tag with link to favourite.html -->
+      <a href="favourite.html" class="nav-link" style="text-decoration: none; color: inherit;">
+        <i class="fas fa-heart"></i> Favourites
+      </a>
+    </div>
+    <div class="search-container">
+      <input type="text" class="search-bar" placeholder="Search...">
+      <!-- Cart icon with cart count -->
+      <a href="cart.html" class="cart-icon" style="text-decoration: none; color: inherit;">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count">0</span>
+      </a>
+    </div>
+  </nav>
+  <div id="searchResults" class="search-results"></div>
+
+  <div class="main-container">
+    <div class="left-sidebar">
+      <a href="seat.html" style="text-decoration: none;">
+        <div class="circle-option" title="Seats">
+          <i class="fas fa-couch"></i>
+        </div>
+      </a>
+      <a href="chatbot.html" style="text-decoration: none;">
+        <div class="circle-option" title="Chatbot">
+          <i class="fas fa-comments"></i>
+        </div>
+      </a>
+      <a href="review.html" style="text-decoration: none;">
+        <div class="circle-option" title="Review">
+          <i class="fas fa-star"></i>
+        </div>
+      </a>
+    </div>
+    <div class="menu-sidebar">
+      <div class="menu-option active">
+        <i class="fas fa-glass-martini-alt"></i> Beverages
+      </div>
+      <div class="menu-option">
+        <i class="fas fa-coffee"></i> Coffee
+      </div>
+      <div class="menu-option">
+        <i class="fas fa-utensils"></i> Food
+      </div>
+      <div class="menu-option">
+        <i class="fas fa-pizza-slice"></i> Special Combos
+      </div>
+    </div>
+    <div class="content-area">
+      <iframe id="contentFrame" src="beverages.html" frameborder="0" class="iframe-content"></iframe>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Initialize cart count from localStorage on page load
+      const savedCount = localStorage.getItem('cartCount') || '0';
+      document.querySelector('.cart-count').textContent = savedCount;
+
+      // Menu Options: Switch content based on category selection
+      document.querySelectorAll('.menu-option').forEach(option => {
+        option.addEventListener('click', () => {
+          document.querySelectorAll('.menu-option').forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+          const category = option.textContent.trim();
+          if (category === 'Beverages') {
+            document.getElementById('contentFrame').src = 'beverages.html';
+          } else if (category === 'Coffee') {
+            document.getElementById('contentFrame').src = 'coffee.html';
+          } else if (category === 'Food') {
+            document.getElementById('contentFrame').src = 'food.html';
+          } else if (category === 'Special Combos') {
+            document.getElementById('contentFrame').src = 'combos.html';
+          }
+        });
+      });
+
+      // Navigation Links: Update active state on click
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+          document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+          link.classList.add('active');
+        });
+      });
+
+      // Circle Options: Update active state on click
+      document.querySelectorAll('.circle-option').forEach(circle => {
+        circle.addEventListener('click', () => {
+          document.querySelectorAll('.circle-option').forEach(c => {
+            c.classList.remove('active');
+          });
+          circle.classList.add('active');
+        });
+      });
+
+      // Search Feature: Trigger search on Enter key press in the search bar
+      const searchBar = document.querySelector('.search-bar');
+      searchBar.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          const query = searchBar.value.trim();
+          if (query !== "") {
+            performSearch(query);
+          }
+        }
+      });
+
+      function performSearch(query) {
+        const mapping = {
+          "beverages": "beverages.html",
+          "coffee": "coffee.html",
+          "food": "food.html",
+          "special combos": "combos.html",
+          "combo": "combos.html",
+          "combos": "combos.html",
+          "juice": "juices.html",
+          "pasta": "pizza.html",
+          "orange juice": "juices.html",
+          "special": "combos.html",
+          "specialcombo": "combos.html",
+          "special combo": "combos.html",
+          "friends": "friends.html",
+          "juices": "juices.html",
+          "pizza": "pizza.html",
+          "favourites": "favourite.html",
+          "favourite": "favourite.html",
+          "espresso": "Espresso.html",
+          "breakfastcombo": "breakfastCombo.html",
+          "breakfast combo": "breakfastCombo.html"
+        };
+
+        const queryLower = query.toLowerCase();
+        if (mapping[queryLower]) {
+          document.getElementById('contentFrame').src = mapping[queryLower];
+          document.getElementById('searchResults').innerHTML = "";
+        } else {
+          document.getElementById('searchResults').innerHTML = `<h2>Search Results for "${query}"</h2><p>No results found</p>`;
+        }
+      }
+    });
+
+    // Listen for storage events to update the cart count if it changes on another page
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'cartCount') {
+        document.querySelector('.cart-count').textContent = event.newValue;
+      }
+    });
+  </script>
+</body>
+
+</html>

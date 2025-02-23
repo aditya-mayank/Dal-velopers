@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shopping Cart - Central Perk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #1a0f0d, #4e342e);
+      color: #fff;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding-top: 0;
+    }
+    /* Navigation */
+    nav {
+      background: rgba(26, 15, 13, 0.95);
+      padding: 1.5rem 8%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+      top: 0;
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+    .logo svg {
+      width: 48px;
+      height: 48px;
+      fill: #c7916f;
+    }
+    .logo h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    /* Cart Container */
+    .cart-container {
+      margin-top: 120px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 40px;
+      padding: 2rem;
+    }
+    .empty-cart {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: rgba(199, 145, 111, 0.1);
+      border-radius: 15px;
+      margin: 2rem auto;
+      max-width: 600px;
+      border: 1px solid rgba(199, 145, 111, 0.2);
+    }
+    .empty-cart h2 {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .empty-cart p {
+      color: #fff;
+      opacity: 0.8;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+    /* Buttons */
+    .btn {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-primary {
+      background: #c7916f;
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #6b8e23;
+      color: #fff;
+    }
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    /* Cart Items */
+    .cart-items {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      background: rgba(199, 145, 111, 0.1);
+      padding: 1.5rem;
+      border-radius: 15px;
+      border: 1px solid rgba(199, 145, 111, 0.2);
+    }
+    .item-details {
+      flex-grow: 1;
+    }
+    .item-title {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .item-price {
+      font-weight: 600;
+      color: #c7916f;
+    }
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .quantity-btn {
+      background: #c7916f;
+      color: #fff;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .remove-item {
+      background: none;
+      border: none;
+      color: #ff6b6b;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0.5rem;
+    }
+    /* Cart Summary */
+    .cart-summary {
+      display: none;
+      background: rgba(199, 145, 111, 0.1);
+      padding: 2rem;
+      border-radius: 15px;
+      margin-top: 2rem;
+      border: 1px solid rgba(199, 145, 111, 0.2);
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .summary-row:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+    .total {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #e6c9a8;
+    }
+    /* Modal Styles for Checkout Options */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+    .modal-content {
+      background-color: #1a0f0d;
+      margin: 10% auto;
+      padding: 2rem;
+      border: 1px solid #c7916f;
+      width: 80%;
+      max-width: 400px;
+      border-radius: 15px;
+      text-align: center;
+    }
+    .modal-content h2 {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      margin-bottom: 1rem;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .cart-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      .quantity-controls {
+        justify-content: center;
+      }
+      .logo h1 {
+        font-size: 2rem;
+      }
+      .cart-container {
+        margin-top: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 24 24">
+        <path d="M2,21V19H20V21H2M20,8V5H18V8H20M20,3A2,2 0 0,1 22,5V8A2,2 0 0,1 20,10H18V13A4,4 0 0,1 14,17H8A4,4 0 0,1 4,13V3H20M16,5H6V13A2,2 0 0,0 8,15H14A2,2 0 0,0 16,13V5Z" />
+      </svg>
+      <h1>Central Perk</h1>
+    </a>
+  </nav>
+
+  <div class="cart-container">
+    <div class="empty-cart" id="emptyCart">
+      <h2>Your Cart is Empty</h2>
+      <p>Looks like you haven't added anything to your cart yet!</p>
+      <a href="menu.html" class="btn btn-primary">Continue Shopping</a>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <!-- Cart Summary now displays only Subtotal and Total -->
+    <div class="cart-summary" id="cartSummary">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span id="subtotal">$0.00</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span id="total">$0.00</span>
+      </div>
+      <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="openCheckoutModal()">Proceed to Checkout</button>
+    </div>
+  </div>
+
+  <!-- Modal for Checkout Options -->
+  <div id="checkoutModal" class="modal">
+    <div class="modal-content">
+      <h2>Choose an Option</h2>
+      <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="window.location.href='pay.html'">Proceed to Pay</button>
+      <button class="btn btn-secondary" style="width: 100%; margin-bottom: 1rem;" onclick="window.location.href='quiz.html'">Take a Quiz for Discount</button>
+      <button class="modal-close" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Functions to handle the checkout modal
+    function openCheckoutModal() {
+      document.getElementById('checkoutModal').style.display = 'block';
+    }
+    function closeModal() {
+      document.getElementById('checkoutModal').style.display = 'none';
+    }
+
+    // ShoppingCart class to manage cart operations
+    class ShoppingCart {
+      constructor() {
+        this.items = this.loadCart();
+        this.updateDisplay();
+      }
+      loadCart() {
+        const savedCart = localStorage.getItem('centralPerkCart');
+        return savedCart ? JSON.parse(savedCart) : [];
+      }
+      saveCart() {
+        localStorage.setItem('centralPerkCart', JSON.stringify(this.items));
+      }
+      addItem(item) {
+        const existingItem = this.items.find(i => i.id === item.id);
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          this.items.push({ ...item, quantity: 1 });
+        }
+        this.saveCart();
+        this.updateDisplay();
+      }
+      removeItem(itemId) {
+        this.items = this.items.filter(item => item.id !== itemId);
+        this.saveCart();
+        this.updateDisplay();
+      }
+      updateQuantity(itemId, change) {
+        const item = this.items.find(i => i.id === itemId);
+        if (item) {
+          item.quantity += change;
+          if (item.quantity <= 0) {
+            this.removeItem(itemId);
+          } else {
+            this.saveCart();
+            this.updateDisplay();
+          }
+        }
+      }
+      calculateTotals() {
+        const subtotal = this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        // Tax is not calculated here; pay.html will compute a 5% tax on the subtotal.
+        const total = subtotal;
+        return { subtotal, total };
+      }
+      updateDisplay() {
+        const emptyCart = document.getElementById('emptyCart');
+        const cartItems = document.getElementById('cartItems');
+        const cartSummary = document.getElementById('cartSummary');
+
+        // Calculate total item count and update localStorage cartCount
+        const totalCount = this.items.reduce((sum, item) => sum + item.quantity, 0);
+        localStorage.setItem('cartCount', totalCount.toString());
+
+        if (this.items.length === 0) {
+          emptyCart.style.display = 'block';
+          cartItems.style.display = 'none';
+          cartSummary.style.display = 'none';
+          return;
+        }
+
+        emptyCart.style.display = 'none';
+        cartItems.style.display = 'flex';
+        cartSummary.style.display = 'block';
+
+        cartItems.innerHTML = this.items.map(item =>
+          `<div class="cart-item" data-id="${item.id}">
+            <div class="item-details">
+              <h3 class="item-title">${item.name}</h3>
+              <p class="item-price">$${item.price.toFixed(2)}</p>
+            </div>
+            <div class="quantity-controls">
+              <button class="quantity-btn" onclick="cart.updateQuantity('${item.id}', -1)">-</button>
+              <span>${item.quantity}</span>
+              <button class="quantity-btn" onclick="cart.updateQuantity('${item.id}', 1)">+</button>
+            </div>
+            <button class="remove-item" onclick="cart.removeItem('${item.id}')">×</button>
+          </div>`
+        ).join('');
+
+        const { subtotal, total } = this.calculateTotals();
+        document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+
+        // Save the cart subtotal in localStorage for pay.html
+        localStorage.setItem('totalAmount', subtotal);
+      }
+    }
+    // Initialize the shopping cart
+    const cart = new ShoppingCart();
+  </script>
+</body>
+</html>

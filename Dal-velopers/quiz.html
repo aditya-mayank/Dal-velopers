@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Friend Quiz</title>
+  <style>
+    /* Global Styles & Background */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: url('./images/bgimg.jpg') no-repeat center center fixed;
+      background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.9)), url('./images/bgimg.jpg');
+      background-size: cover;
+    }
+    /* Main container for forms and progress panel */
+    #main-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+      padding: 20px;
+      flex-wrap: wrap;
+    }
+    /* Card style for both friend and user forms */
+    .card {
+      background-color: rgba(255, 255, 255, 0.95);
+      width: 400px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s;
+    }
+    .card:hover {
+      transform: scale(1.02);
+    }
+    .card h2 {
+      text-align: center;
+      color: #6f4e37;
+      margin-bottom: 20px;
+    }
+    /* Question block styling */
+    .question {
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .question p {
+      margin: 0 0 10px 0;
+      font-weight: bold;
+      color: #6f4e37;
+    }
+    .options label, .fill input {
+      display: block;
+      margin-bottom: 5px;
+      cursor: pointer;
+      color: #333;
+    }
+    .options input[type="radio"] {
+      margin-right: 8px;
+    }
+    .fill input {
+      width: calc(100% - 10px);
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    /* Button styles */
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #6f4e37;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    button:hover {
+      background-color: #5a3e2d;
+      transform: scale(1.02);
+    }
+    /* Progress Panel (for user form) */
+    #progress-panel {
+      background-color: rgba(255, 255, 255, 0.95);
+      width: 300px;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s;
+      display: none;
+    }
+    #progress-panel:hover {
+      transform: scale(1.02);
+    }
+    #progress-panel h3 {
+      color: #6f4e37;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    #progress-bar-container {
+      background-color: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      height: 20px;
+    }
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #6f4e37;
+      transition: width 0.3s;
+    }
+    #progress-details p {
+      margin: 5px 0;
+      color: #333;
+    }
+    /* Modal for final results */
+    #result-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+    #result-modal .modal-content {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    #result-modal .modal-content h3 {
+      margin-bottom: 15px;
+      color: #6f4e37;
+    }
+    #result-modal .modal-content p {
+      margin: 10px 0;
+      color: #333;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      #main-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .card, #progress-panel {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="main-container">
+    <!-- Friend Form Card -->
+    <div id="friend-card" class="card">
+      <h2>Friend's Quiz</h2>
+      <form id="friend-form">
+        <!-- Friend questions will be generated here -->
+      </form>
+      <button id="friend-submit-btn">Submit Friend Answers</button>
+    </div>
+    
+    <!-- User Form Card (hidden initially) -->
+    <div id="user-card" class="card" style="display:none;">
+      <h2>Your Quiz: How Well Do You Know Your Friend?</h2>
+      <form id="user-form">
+        <!-- User questions will be generated here -->
+      </form>
+      <button id="user-submit-btn">Submit Your Answers</button>
+    </div>
+    
+    <!-- Progress Panel for User Quiz -->
+    <div id="progress-panel">
+      <h3>Progress</h3>
+      <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+      </div>
+      <div id="progress-details">
+        <p>Questions Attempted: <span id="attempted">0</span></p>
+        <p>Correct Answers: <span id="correct">0</span></p>
+        <p>Wrong Answers: <span id="wrong">0</span></p>
+        <p>Score: <span id="score">0</span></p>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Result Modal -->
+  <div id="result-modal">
+    <div class="modal-content">
+      <h3>Your Result</h3>
+      <p>Correct Answers: <span id="result-correct"></span></p>
+      <p>Wrong Answers: <span id="result-wrong"></span></p>
+      <p>Total Score: <span id="result-score"></span></p>
+      <p>Discount Earned: <span id="result-discount"></span>%</p>
+      <button id="close-modal">Close</button>
+    </div>
+  </div>
+  
+  <script>
+    // Dummy Questions Array
+    const questions = [
+      {
+        type: "multiple",
+        question: "What is your friend's favorite coffee?",
+        options: ["Espresso", "Latte", "Cappuccino", "Americano"],
+        answer: "Latte"
+      },
+      {
+        type: "multiple",
+        question: "Which city does your friend love the most?",
+        options: ["Paris", "New York", "Tokyo", "Sydney"],
+        answer: "Tokyo"
+      },
+      {
+        type: "fill",
+        question: "What is your friend's pet's name?",
+        answer: "Buddy"
+      },
+      {
+        type: "multiple",
+        question: "Your friend's favorite season?",
+        options: ["Winter", "Spring", "Summer", "Fall"],
+        answer: "Spring"
+      },
+      {
+        type: "fill",
+        question: "What's your friend's favorite hobby?",
+        answer: "Reading"
+      }
+    ];
+    
+    // Storage for answers
+    let friendAnswers = {};
+    let userAnswers = {};
+    
+    // Generate form for either friend or user
+    // mode: "friend" or "user"
+    function generateForm(formElement, storageObj, mode) {
+      formElement.innerHTML = "";
+      questions.forEach((q, index) => {
+        const questionDiv = document.createElement("div");
+        questionDiv.className = "question";
+        const questionP = document.createElement("p");
+        questionP.textContent = (index + 1) + ". " + q.question;
+        questionDiv.appendChild(questionP);
+        
+        if(q.type === "multiple") {
+          const optionsDiv = document.createElement("div");
+          optionsDiv.className = "options";
+          q.options.forEach(option => {
+            const label = document.createElement("label");
+            const radio = document.createElement("input");
+            radio.type = "radio";
+            radio.name = mode + "-question" + index;
+            radio.value = option;
+            radio.addEventListener("change", function(){
+              storageObj[index] = radio.value;
+              if(mode === "user") updateProgress();
+            });
+            label.appendChild(radio);
+            label.appendChild(document.createTextNode(option));
+            optionsDiv.appendChild(label);
+          });
+          questionDiv.appendChild(optionsDiv);
+        } else if(q.type === "fill") {
+          const fillDiv = document.createElement("div");
+          fillDiv.className = "fill";
+          const input = document.createElement("input");
+          input.type = "text";
+          input.placeholder = "Your answer here";
+          input.addEventListener("input", function(){
+            storageObj[index] = input.value;
+            if(mode === "user") updateProgress();
+          });
+          fillDiv.appendChild(input);
+          questionDiv.appendChild(fillDiv);
+        }
+        
+        formElement.appendChild(questionDiv);
+      });
+    }
+    
+    // Update progress panel for user form based on friend's answers
+    function updateProgress() {
+      const totalQuestions = questions.length;
+      let attempted = 0, correctCount = 0, wrongCount = 0, score = 0;
+      
+      for(let i = 0; i < totalQuestions; i++){
+        if(userAnswers[i] && userAnswers[i].trim() !== ""){
+          attempted++;
+          if(userAnswers[i].trim().toLowerCase() === friendAnswers[i].trim().toLowerCase()){
+            correctCount++;
+            score += 10;
+          } else {
+            wrongCount++;
+            score -= 5;
+          }
+        }
+      }
+      
+      const progressPercent = (attempted / totalQuestions) * 100;
+      document.getElementById("progress-bar").style.width = progressPercent + "%";
+      document.getElementById("attempted").textContent = attempted;
+      document.getElementById("correct").textContent = correctCount;
+      document.getElementById("wrong").textContent = wrongCount;
+      document.getElementById("score").textContent = score;
+    }
+    
+    // DOM References
+    const friendForm = document.getElementById("friend-form");
+    const userForm = document.getElementById("user-form");
+    const friendCard = document.getElementById("friend-card");
+    const userCard = document.getElementById("user-card");
+    const progressPanel = document.getElementById("progress-panel");
+    const friendSubmitBtn = document.getElementById("friend-submit-btn");
+    const userSubmitBtn = document.getElementById("user-submit-btn");
+    
+    // Generate friend form on page load
+    generateForm(friendForm, friendAnswers, "friend");
+    
+    // When friend submits their answers
+    friendSubmitBtn.addEventListener("click", function(){
+      friendCard.style.display = "none";
+      // Generate user form and show it
+      generateForm(userForm, userAnswers, "user");
+      userCard.style.display = "block";
+      progressPanel.style.display = "block";
+    });
+    
+    // When user submits their answers, compare with friend's answers
+    userSubmitBtn.addEventListener("click", function(){
+      let correctCount = 0, wrongCount = 0, score = 0;
+      for(let i = 0; i < questions.length; i++){
+        if(userAnswers[i] && userAnswers[i].trim() !== ""){
+          if(userAnswers[i].trim().toLowerCase() === friendAnswers[i].trim().toLowerCase()){
+            correctCount++;
+            score += 10;
+          } else {
+            wrongCount++;
+            score -= 5;
+          }
+        }
+      }
+      // Calculate discount: 5% per correct answer, up to a max of 40%
+      const discount = Math.min(correctCount * 5, 40);
+      document.getElementById("result-correct").textContent = correctCount;
+      document.getElementById("result-wrong").textContent = wrongCount;
+      document.getElementById("result-score").textContent = score;
+      document.getElementById("result-discount").textContent = discount;
+      document.getElementById("result-modal").style.display = "flex";
+    });
+    
+    // Close result modal and redirect to pay.html after storing discount
+    document.getElementById("close-modal").addEventListener("click", function(){
+      const discount = parseFloat(document.getElementById("result-discount").textContent) || 0;
+      localStorage.setItem('discount', discount);
+      window.location.href = "pay.html";
+    });
+  </script>
+</body>
+</html>
