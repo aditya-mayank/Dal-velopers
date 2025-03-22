@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Search Results</title>
+    <!-- Google Fonts for a modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #4a2c23);
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Fade-in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Grid layout for items */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+            align-items: stretch;
+            /* Make sure each grid item stretches equally */
+        }
+
+        /* Each item card styling with fixed height and flex layout */
+        .item-wrapper {
+            position: relative;
+            text-align: center;
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.6s ease both;
+            height: 350px;
+            /* Fixed height for uniformity */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .item-wrapper:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Circular image container */
+        .item-circle {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .item-circle:hover {
+            transform: scale(1.05);
+        }
+
+        /* Image styling */
+        .item-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .item-image:hover {
+            transform: scale(1.1);
+        }
+
+        /* Item label and price styling */
+        .item-label {
+            margin-top: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .item-price {
+            font-size: 16px;
+            margin: 5px 0;
+            color: #555;
+        }
+
+        /* Cart container styles */
+        .item-cart-container {
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .item-quantity {
+            width: 50px;
+            text-align: center;
+            padding: 0.2rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .add-to-cart-btn {
+            background: #2c1810;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #4a2c23;
+        }
+
+        /* Heart icon styles */
+        .heart-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 26px;
+            color: white;
+            background-color: #4a2c23;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .heart-icon.favorited {
+            color: red;
+            background-color: #fff;
+        }
+
+        .heart-icon:hover {
+            transform: scale(1.3);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Message styling */
+        .no-items {
+            text-align: center;
+            font-size: 24px;
+            color: #fff;
+            margin-top: 50px;
+        }
+
+        /* Responsive grid adjustments */
+        @media (max-width: 992px) {
+            .items-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .items-grid {
+                grid-template-columns: repeat(1, 1fr);
+                gap: 20px;
+            }
+
+            .item-circle {
+                width: 120px;
+                height: 120px;
+            }
+
+            .item-label {
+                font-size: 18px;
+            }
+        }
+
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 12px;
+            background-color: #f8efe6;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2c1810;
+            border-radius: 10px;
+            border: 2px solid #f8efe6;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a2c23;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Items Grid: All items are placed inside this grid -->
+        <div class="items-grid" id="itemsGrid">
+            <!-- Food Items -->
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="pizza1" data-name="Joey Special Pizza" data-price="12.99">&#x2665;
+                </div>
+                <div class="item-circle">
+                    <img src="images/images.jpeg" alt="Joey Special Pizza" class="item-image">
+                </div>
+                <div class="item-label">Joey Special Pizza</div>
+                <div class="item-price">$12.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="pasta1" data-name="Pasta" data-price="10.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/pasta.jpeg" alt="Pasta" class="item-image">
+                </div>
+                <div class="item-label">Pasta</div>
+                <div class="item-price">$10.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="sandwich1" data-name="Sandwich" data-price="7.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/sandwich.jpeg" alt="Sandwich" class="item-image">
+                </div>
+                <div class="item-label">Sandwich</div>
+                <div class="item-price">$7.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="tacos1" data-name="Tacos" data-price="8.50">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/tacos.webp" alt="Tacos" class="item-image">
+                </div>
+                <div class="item-label">Tacos</div>
+                <div class="item-price">$8.50</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <!-- Beverage Items -->
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="oj1" data-name="Orange Juice" data-price="4.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee1.jpeg" alt="Orange Juice" class="item-image">
+                </div>
+                <div class="item-label">Latte</div>
+                <div class="item-price">$4.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="it1" data-name="Iced Tea" data-price="3.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee2.jpg" alt="Iced Tea" class="item-image">
+                </div>
+                <div class="item-label">Iced Tea</div>
+                <div class="item-price">$3.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="lm1" data-name="Lemonade" data-price="3.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee3.jpeg" alt="Lemonade" class="item-image">
+                </div>
+                <div class="item-label">Tea</div>
+                <div class="item-price">$3.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="sm1" data-name="Smoothie" data-price="5.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee4.jpg" alt="Smoothie" class="item-image">
+                </div>
+                <div class="item-label">Chocolate Smoothie</div>
+                <div class="item-price">$5.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <!-- Coffee Items -->
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="es1" data-name="Espresso" data-price="2.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee5.jpg" alt="Espresso" class="item-image">
+                </div>
+                <div class="item-label">Espresso</div>
+                <div class="item-price">$2.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="cp1" data-name="Cappuccino" data-price="3.50">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee6.jpg" alt="Cappuccino" class="item-image">
+                </div>
+                <div class="item-label">Cappuccino</div>
+                <div class="item-price">$3.50</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="lt1" data-name="Latte" data-price="3.75">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee7.jpg" alt="Latte" class="item-image">
+                </div>
+                <div class="item-label">Latte</div>
+                <div class="item-price">$3.75</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="am1" data-name="Americano" data-price="2.50">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee8.jpeg" alt="Americano" class="item-image">
+                </div>
+                <div class="item-label">Americano</div>
+                <div class="item-price">$2.50</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="mc1" data-name="Mocha" data-price="4.25">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee9.jpg" alt="Mocha" class="item-image">
+                </div>
+                <div class="item-label">Mocha</div>
+                <div class="item-price">$4.25</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="ma1" data-name="Macchiato" data-price="3.25">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee10.jpg" alt="Macchiato" class="item-image">
+                </div>
+                <div class="item-label">Macchiato</div>
+                <div class="item-price">$3.25</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="ic1" data-name="Irish Coffee" data-price="5.50">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee11.jpg" alt="Irish Coffee" class="item-image">
+                </div>
+                <div class="item-label">Irish Coffee</div>
+                <div class="item-price">$5.50</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="af1" data-name="Affogato" data-price="4.75">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee12.jpg" alt="Affogato" class="item-image">
+                </div>
+                <div class="item-label">Affogato</div>
+                <div class="item-price">$4.75</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="cb1" data-name="Cold Brew" data-price="3.95">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee13.jpg" alt="Cold Brew" class="item-image">
+                </div>
+                <div class="item-label">Cold Brew</div>
+                <div class="item-price">$3.95</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="fw1" data-name="Flat White" data-price="3.85">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee14.jpg" alt="Flat White" class="item-image">
+                </div>
+                <div class="item-label">Flat White</div>
+                <div class="item-price">$3.85</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="rs1" data-name="Ristretto" data-price="3.10">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="images/coffee15.webp" alt="Ristretto" class="item-image">
+                </div>
+                <div class="item-label">Ristretto</div>
+                <div class="item-price">$3.10</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <!-- Friends Menu Items -->
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="mj1" data-name="Monica's Jam" data-price="3.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/monicaJam.jpg" alt="Monica's Jam" class="item-image">
+                </div>
+                <div class="item-label">Monica's Jam</div>
+                <div class="item-price">$3.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="jms1" data-name="Joey’s Meatball Sub" data-price="5.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/meatballsSub.jpg" alt="Joey’s Meatball Sub" class="item-image">
+                </div>
+                <div class="item-label">Joey’s Meatball Sub</div>
+                <div class="item-price">$5.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="adl1" data-name="A Dozen Lasagnas" data-price="24.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/lasgange.jpg" alt="A Dozen Lasagnas" class="item-image">
+                </div>
+                <div class="item-label">A Dozen Lasagnas</div>
+                <div class="item-price">$24.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="rs1" data-name="Ross’s Sandwich" data-price="6.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/RossTurkey.jpg" alt="Ross’s Sandwich" class="item-image">
+                </div>
+                <div class="item-label">Ross’s Sandwich</div>
+                <div class="item-price">$6.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <!-- Additional Items from New Block -->
+            <!-- <div class="item-wrapper">
+        <div class="heart-icon" data-id="mo1" data-name="Mockolate" data-price="4.99">&#x2665;</div>
+        <div class="item-circle">
+          <img src="friends/Mockolate.jpg" alt="Mockolate" class="item-image">
+        </div>
+        <div class="item-label">Mockolate</div>
+        <div class="item-price">$4.99</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div> -->
+            <!-- <div class="item-wrapper">
+        <div class="heart-icon" data-id="cc1" data-name="Chesscake" data-price="7.99">&#x2665;</div>
+        <div class="item-circle">
+          <img src="friends/chesscake.jpg" alt="Chesscake" class="item-image">
+        </div>
+        <div class="item-label">Chesscake</div>
+        <div class="item-price">$7.99</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div> -->
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="mf1" data-name="Monica’s Fingernail" data-price="1.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/fingernail.jpg" alt="Monica’s Fingernail" class="item-image">
+                </div>
+                <div class="item-label">Monica’s Fingernail</div>
+                <div class="item-price">$1.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <!-- Additional Beverage & Food Items -->
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/orange.jpeg" alt="Orange Juice" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="juice1" data-name="Juice" data-price="3.50">&#x2665;</div>
+                <div class="item-label">Orange Juice</div>
+                <div class="item-price">$3.50</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/lemonade.jpeg" alt="Lemonade" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="lemonade1" data-name="Lemonade" data-price="3.75">&#x2665;</div>
+                <div class="item-label">Lemonade</div>
+                <div class="item-price">$3.75</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/smoothie.jpeg" alt="Smoothie" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="smoothie1" data-name="Smoothie" data-price="5.00">&#x2665;</div>
+                <div class="item-label">Strawbberry Smoothie</div>
+                <div class="item-price">$5.00</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/beer.jpg" alt="Beer" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="beer1" data-name="Beer" data-price="2.50">&#x2665;</div>
+                <div class="item-label">Beer</div>
+                <div class="item-price">$2.50</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/whiskey.jpg" alt="Whiskey" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="whiskey1" data-name="Whiskey" data-price="2.00">&#x2665;</div>
+                <div class="item-label">Whiskey</div>
+                <div class="item-price">$2.00</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/milkshake.jpg" alt="Milkshake" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="milkshake1" data-name="Milkshake" data-price="4.50">&#x2665;</div>
+                <div class="item-label">Milkshake</div>
+                <div class="item-price">$4.50</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/soda.jpg" alt="Soda" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="soda1" data-name="Soda" data-price="1.75">&#x2665;</div>
+                <div class="item-label">Soda</div>
+                <div class="item-price">$1.75</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/water.jpeg" alt="Water" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="water1" data-name="Water" data-price="1.00">&#x2665;</div>
+                <div class="item-label">Water</div>
+                <div class="item-price">$1.00</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://cdn3.foodviva.com/static-content/food-images/juice-recipes/strawberry-juice-recipe/strawberry-juice-recipe.jpg"
+                        alt="Strawberry Juice" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="juice2" data-name="Strawberry Juice" data-price="3.50">&#x2665;</div>
+                <div class="item-label">Strawberry Juice</div>
+                <div class="item-price">$3.50</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/energydrink.jpg" alt="Energy Drink" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="energy1" data-name="Energy Drink" data-price="3.25">&#x2665;</div>
+                <div class="item-label">Energy Drink</div>
+                <div class="item-price">$3.25</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/hotChocolate.jpg" alt="Hot Chocolate" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="hotChoc1" data-name="Hot Chocolate" data-price="3.75">&#x2665;</div>
+                <div class="item-label">Hot Chocolate</div>
+                <div class="item-price">$3.75</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/rum.jpg" alt="Rum" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="rum1" data-name="Rum" data-price="3.50">&#x2665;</div>
+                <div class="item-label">Rum</div>
+                <div class="item-price">$3.50</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/frappe.jpg" alt="Frappe" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="frappe1" data-name="Frappe" data-price="4.00">&#x2665;</div>
+                <div class="item-label">Frappe</div>
+                <div class="item-price">$4.00</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="images/wine.webp" alt="Wine" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="wine1" data-name="Wine" data-price="2.25">&#x2665;</div>
+                <div class="item-label">Wine</div>
+                <div class="item-price">$2.25</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <!-- Friends Menu Items (Duplicate items may be removed by JS) -->
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="mj1" data-name="Monica's Jam" data-price="3.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/monicaJam.jpg" alt="Monica's Jam" class="item-image">
+                </div>
+                <div class="item-label">Monica's Jam</div>
+                <div class="item-price">$3.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <!-- <div class="item-wrapper">
+        <div class="heart-icon" data-id="jms1" data-name="Joey’s Meatball Sub" data-price="5.99">&#x2665;</div>
+        <div class="item-circle">
+          <img src="friends/meatballsSub.jpg" alt="Joey’s Meatball Sub" class="item-image">
+        </div>
+        <div class="item-label">Joey’s Meatball Sub</div>
+        <div class="item-price">$5.99</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div> -->
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="adl1" data-name="A Dozen Lasagnas" data-price="24.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/lasgange.jpg" alt="A Dozen Lasagnas" class="item-image">
+                </div>
+                <div class="item-label">A Dozen Lasagnas</div>
+                <div class="item-price">$24.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="rs1" data-name="Ross’s Sandwich" data-price="6.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/RossTurkey.jpg" alt="Ross’s Sandwich" class="item-image">
+                </div>
+                <div class="item-label">Ross’s Sandwich</div>
+                <div class="item-price">$6.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <!-- Items from the second block (duplicates exist; JS will hide repeats) -->
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="mo1" data-name="Mockolate" data-price="4.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/Mockolate.jpg" alt="Mockolate" class="item-image">
+                </div>
+                <div class="item-label">Mockolate</div>
+                <div class="item-price">$4.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="cc1" data-name="Chesscake" data-price="7.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/chesscake.jpg" alt="Chesscake" class="item-image">
+                </div>
+                <div class="item-label">Chesscake</div>
+                <div class="item-price">$7.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="mf1" data-name="Monica’s Fingernail" data-price="1.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="friends/fingernail.jpg" alt="Monica’s Fingernail" class="item-image">
+                </div>
+                <div class="item-label">Monica’s Fingernail</div>
+                <div class="item-price">$1.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <!-- More Additional Items -->
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://tse2.mm.bing.net/th?id=OIP.l18ufqL-rPd-WlVYctssSAHaE7&pid=Api&P=0&h=180"
+                        alt="Linda" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="unique_5" data-name="Linda" data-price="4.99">&#x2665;</div>
+                <div class="item-label">Linda</div>
+                <div class="item-price">$4.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="item1" data-name="Strawberry Pastry" data-price="3.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="https://tse4.mm.bing.net/th?id=OIP.3EzEAr8H4ayzPQzONMwplgHaE8&pid=Api&P=0&h=180"
+                        alt="Monica's Jam" class="item-image">
+                </div>
+                <div class="item-label">Strawberry pastry</div>
+                <div class="item-price">$3.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://hips.hearstapps.com/hmg-prod/images/types-of-cake-1644878278.jpeg?crop=0.984xw:1.00xh;0.00962xw,0&resize=640:*"
+                        alt="Joey’s Meatball Sub" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="item2" data-name="Beer Cake" data-price="5.99">&#x2665;</div>
+                <div class="item-label">Beer Cake</div>
+                <div class="item-price">$5.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://www.tastingtable.com/img/gallery/30-types-of-cake-explained/red-velvet-cake-1658850950.jpg"
+                        alt="A Dozen Lasagnas" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="item3" data-name="Red Velvet" data-price="5.99">&#x2665;</div>
+                <div class="item-label">Red Velvet</div>
+                <div class="item-price">$5.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://assets.epicurious.com/photos/5b884f70daab96526499ca57/1:1/w_775%2Cc_limit/Orange-Chiffon-Cake-30082018.jpg"
+                        alt="Ross’s Sandwich" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="item4" data-name="Orange Cake" data-price="6.99">&#x2665;</div>
+                <div class="item-label">Orange Cake</div>
+                <div class="item-price">$6.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="heart-icon" data-id="item7" data-name="Fruit cake" data-price="8.99">&#x2665;</div>
+                <div class="item-circle">
+                    <img src="https://d3cif2hu95s88v.cloudfront.net/blog/wp-content/uploads/2020/08/25122711/Fruit-cake.jpg"
+                        alt="Monica’s Fingernail" class="item-image">
+                </div>
+                <div class="item-label">Fruit cake</div>
+                <div class="item-price">$8.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://tse2.mm.bing.net/th?id=OIP.yPutFHqMxeL8Gya7JINrAgHaK1&pid=Api&P=0&h=180"
+                        alt="Chai Pakodi" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="prod_1" data-name="Chai Pakodi" data-price="3.99">&#x2665;</div>
+                <div class="item-label">Chai Pakodi</div>
+                <div class="item-price">$3.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://buytea.com/cdn/shop/articles/samosas-bhajis-banner_2048x2048.webp?v=1695643802"
+                        alt="Chai Samosa" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="prod_2" data-name="Chai Samosa" data-price="5.99">&#x2665;</div>
+                <div class="item-label">Chai Samosa</div>
+                <div class="item-price">$5.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://thumbs.dreamstime.com/z/indian-milk-tea-chai-onion-pakoda-fried-snack-kerala-snacks-popular-deep-fried-hot-spicy-tea-time-food-traditional-food-201037102.jpg"
+                        alt="Chai Bhade" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="prod_3" data-name="Chai Bhade" data-price="24.99">&#x2665;</div>
+                <div class="item-label">Chai Bhade</div>
+                <div class="item-price">$24.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://c8.alamy.com/comp/2D7ND57/banana-fry-pazham-pori-kerala-tea-time-snacks-fired-snacks-for-onam-festival-home-made-traditional-kerala-snacks-2D7ND57.jpg"
+                        alt="Chai longStick" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="prod_4" data-name="Chai longStick" data-price="6.99">&#x2665;</div>
+                <div class="item-label">Chai longStick</div>
+                <div class="item-price">$6.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://www.alices.kitchen/wp-content/uploads/2021/11/What-Does-Chai-Taste-Like-5-Most-Popular-Flavors_Alices-Kitchen-1-scaled-1-2048x1365.jpg"
+                        alt="Chai Cookie" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="prod_5" data-name="Chai Cookie" data-price="4.99">&#x2665;</div>
+                <div class="item-label">Chai Cookie</div>
+                <div class="item-price">$4.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://images.herzindagi.info/webstories/2799/1662434201-cover.jpg" alt="Chai Special"
+                        class="item-image">
+                </div>
+                <div class="heart-icon" data-id="prod_6" data-name="Chai Special" data-price="7.99">&#x2665;</div>
+                <div class="item-label">Chai Special</div>
+                <div class="item-price">$7.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+            <div class="item-wrapper">
+                <div class="item-circle">
+                    <img src="https://st4.depositphotos.com/19960896/30738/i/1600/depositphotos_307385320-stock-photo-nagpur-india-september-2019-parle.jpg"
+                        alt="Chai ParelG" class="item-image">
+                </div>
+                <div class="heart-icon" data-id="prod_7" data-name="Chai ParelG" data-price="1.99">&#x2665;</div>
+                <div class="item-label">Chai ParelG</div>
+                <div class="item-price">$1.99</div>
+                <div class="item-cart-container">
+                    <input type="number" class="item-quantity" value="0" min="0">
+                    <button class="add-to-cart-btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JavaScript for duplicate removal and filtering based on URL query -->
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const query = getQueryParam('query') || '';
+            if (query.trim() === "") {
+                window.location.href = 'beverages.html';
+                return;
+            }
+            // Remove duplicate items by keeping the first occurrence based on data-id.
+            const wrappers = Array.from(document.querySelectorAll('.item-wrapper'));
+            const seenIds = new Set();
+            wrappers.forEach(wrapper => {
+                const heart = wrapper.querySelector('.heart-icon');
+                if (heart) {
+                    const id = heart.getAttribute('data-id');
+                    if (seenIds.has(id)) {
+                        wrapper.style.display = 'none';
+                    } else {
+                        seenIds.add(id);
+                    }
+                }
+            });
+            // Filter items based on the search query (case-insensitive)
+            let foundCount = 0;
+            wrappers.forEach(wrapper => {
+                const labelElem = wrapper.querySelector('.item-label');
+                if (labelElem) {
+                    const label = labelElem.textContent || '';
+                    if (label.toLowerCase().includes(query.toLowerCase())) {
+                        wrapper.style.display = 'flex'; // Ensure the flex layout is maintained
+                        foundCount++;
+                    } else {
+                        wrapper.style.display = 'none';
+                    }
+                }
+            });
+            if (foundCount === 0) {
+                const container = document.querySelector('.container');
+                const noItemsMsg = document.createElement('div');
+                noItemsMsg.className = 'no-items';
+                noItemsMsg.textContent = 'No items found';
+                container.appendChild(noItemsMsg);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Favourites - Central Perk</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+    /* Global Resets and Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1a0f0d, #3e2723);
+      color: #fff;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Navigation Bar */
+    nav {
+      background: rgba(26, 15, 13, 0.95);
+      padding: 1.5rem 8%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .logo svg {
+      width: 48px;
+      height: 48px;
+      fill: #c7916f;
+    }
+
+    .logo h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Favorites Container */
+    .favorites-container {
+      margin-top: 120px;
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 2rem;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    /* Fade-in Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Empty Favorites Message */
+    .empty-favorites {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: rgba(199, 145, 111, 0.15);
+      border-radius: 15px;
+      margin: 2rem auto;
+      max-width: 600px;
+      border: 1px solid rgba(199, 145, 111, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .empty-favorites:hover {
+      transform: scale(1.02);
+    }
+
+    .empty-favorites h2 {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .empty-favorites p {
+      color: #fff;
+      opacity: 0.85;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+
+    /* Button Styling */
+    .btn {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background: #c7916f;
+      color: #fff;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Favorite Items (Dynamically Loaded) */
+    .favorite-items {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeIn 0.8s ease forwards;
+    }
+
+    .favorite-item {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      background: rgba(199, 145, 111, 0.15);
+      padding: 1.5rem;
+      border-radius: 15px;
+      border: 1px solid rgba(199, 145, 111, 0.3);
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .favorite-item:hover {
+      background: rgba(199, 145, 111, 0.25);
+      transform: translateY(-3px);
+    }
+
+    .item-details {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .item-info {
+      flex-grow: 1;
+    }
+
+    .item-title {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .item-price {
+      font-weight: 600;
+      color: #c7916f;
+    }
+
+    /* Cart Controls */
+    .cart-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      background: rgba(199, 145, 111, 0.2);
+      border-radius: 50px;
+      padding: 0.2rem;
+      border: 1px solid rgba(199, 145, 111, 0.3);
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(199, 145, 111, 0.4);
+      color: #fff;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .qty-btn:hover {
+      background: rgba(199, 145, 111, 0.6);
+    }
+
+    .qty-display {
+      width: 40px;
+      text-align: center;
+      font-weight: 600;
+      color: #e6c9a8;
+    }
+
+    .add-to-cart {
+      background: #c7916f;
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.6rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .add-to-cart:hover {
+      background: #a16c50;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .add-to-cart svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    @keyframes addedToCart {
+      0% {
+        background-color: #c7916f;
+      }
+
+      50% {
+        background-color: #4CAF50;
+      }
+
+      100% {
+        background-color: #c7916f;
+      }
+    }
+
+    .success-animation {
+      animation: addedToCart 1s ease;
+    }
+
+    /* New Remove Button Styling */
+    .remove-item {
+      background: #c7916f;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .remove-item:hover {
+      background: #a16c50;
+    }
+
+    /* Custom Alert Box */
+    .custom-alert {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(26, 15, 13, 0.95);
+      color: #fff;
+      padding: 2rem;
+      border: 1px solid rgba(199, 145, 111, 0.3);
+      border-radius: 15px;
+      text-align: center;
+      z-index: 2000;
+    }
+
+    .custom-alert button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      background: #c7916f;
+      border: none;
+      border-radius: 50px;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .custom-alert button:hover {
+      background: #a16c50;
+    }
+
+    /* Revamped Toast Message */
+    .toast {
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #c7916f, #a16c50);
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      z-index: 2000;
+      pointer-events: none;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+    }
+
+    @keyframes toastIn {
+      0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+      }
+
+      60% {
+        transform: translate(-50%, -50%) scale(1.05);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes toastOut {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    .toast-show {
+      animation: toastIn 0.5s forwards;
+    }
+
+    .toast-hide {
+      animation: toastOut 0.5s forwards;
+    }
+
+    @media (max-width: 768px) {
+      .favorite-item {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .item-details {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .cart-controls {
+        justify-content: center;
+      }
+
+      .logo h1 {
+        font-size: 2rem;
+      }
+
+      .favorites-container {
+        margin-top: 100px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M2,21V19H20V21H2M20,8V5H18V8H20M20,3A2,2 0 0,1 22,5V8A2,2 0 0,1 20,10H18V13A4,4 0 0,1 14,17H8A4,4 0 0,1 4,13V3H20M16,5H6V13A2,2 0 0,0 8,15H14A2,2 0 0,0 16,13V5Z">
+        </path>
+      </svg>
+      <h1>Central Perk</h1>
+    </a>
+  </nav>
+
+  <!-- Custom Alert Box for Zero Quantity -->
+  <div id="customAlert" class="custom-alert">
+    <p>Please select a quantity greater than 0</p>
+    <button onclick="closeAlert()">OK</button>
+  </div>
+
+  <!-- Toast Message for Added Items -->
+  <div id="toast" class="toast">Added!</div>
+
+  <div class="favorites-container">
+    <div class="empty-favorites" id="emptyFavorites">
+      <h2>Your Favourites List is Empty</h2>
+      <p>It looks like you haven't added any favourites yet!</p>
+      <a href="menu.html" class="btn btn-primary">Browse Items</a>
+    </div>
+
+    <div class="favorite-items" id="favoriteItems">
+      <!-- Favorite items will be dynamically loaded here -->
+    </div>
+  </div>
+
+  <script>
+    class Favorites {
+      constructor() {
+        this.items = this.loadFavorites();
+        // Object to track quantities per item (id: quantity)
+        this.quantities = {};
+        this.updateDisplay();
+      }
+
+      loadFavorites() {
+        const savedFavs = localStorage.getItem('centralPerkFavorites');
+        return savedFavs ? JSON.parse(savedFavs) : [];
+      }
+
+      saveFavorites() {
+        localStorage.setItem('centralPerkFavorites', JSON.stringify(this.items));
+      }
+
+      loadCart() {
+        const savedCart = localStorage.getItem('centralPerkCart');
+        return savedCart ? JSON.parse(savedCart) : [];
+      }
+
+      saveCart(cartArray) {
+        localStorage.setItem('centralPerkCart', JSON.stringify(cartArray));
+      }
+
+      updateDisplay() {
+        const emptyFavorites = document.getElementById('emptyFavorites');
+        const favoriteItems = document.getElementById('favoriteItems');
+
+        if (this.items.length === 0) {
+          emptyFavorites.style.display = 'block';
+          favoriteItems.style.display = 'none';
+          return;
+        }
+
+        emptyFavorites.style.display = 'none';
+        favoriteItems.style.display = 'flex';
+
+        favoriteItems.innerHTML = this.items.map(item => {
+          const quantity = this.quantities[item.id] || 0;
+          return `
+            <div class="favorite-item" data-id="${item.id}">
+              <div class="item-details">
+                <div class="item-info">
+                  <h3 class="item-title">${item.name}</h3>
+                  <p class="item-price">$${item.price.toFixed(2)}</p>
+                </div>
+                <div class="cart-controls">
+                  <div class="quantity-controls">
+                    <button class="qty-btn" onclick="favorites.decreaseQuantity('${item.id}')">-</button>
+                    <span class="qty-display" id="qty-${item.id}">${quantity}</span>
+                    <button class="qty-btn" onclick="favorites.increaseQuantity('${item.id}')">+</button>
+                  </div>
+                  <button class="add-to-cart" id="add-${item.id}" onclick="favorites.addToCart('${item.id}')">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M17,18C15.89,18 15,18.89 15,20A2,2 0 0,0 17,22A2,2 0 0,0 19,20C19,18.89 18.1,18 17,18M1,2V4H3L6.6,11.59L5.24,14.04C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42A0.25,0.25 0 0,1 7.17,14.75C7.17,14.7 7.18,14.66 7.2,14.63L8.1,13H15.55C16.3,13 16.96,12.58 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2M7,18C5.89,18 5,18.89 5,20A2,2 0 0,0 7,22A2,2 0 0,0 9,20C9,18.89 8.1,18 7,18Z"></path>
+                    </svg>
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+              <button class="remove-item" onclick="favorites.removeItem('${item.id}')">&#10006;</button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      removeItem(itemId) {
+        this.items = this.items.filter(item => item.id !== itemId);
+        delete this.quantities[itemId];
+        this.saveFavorites();
+        this.updateDisplay();
+      }
+
+      increaseQuantity(itemId) {
+        this.quantities[itemId] = (this.quantities[itemId] || 0) + 1;
+        this.updateDisplay();
+      }
+
+      decreaseQuantity(itemId) {
+        if (this.quantities[itemId] > 0) {
+          this.quantities[itemId]--;
+          this.updateDisplay();
+        }
+      }
+
+      addToCart(itemId) {
+        const quantity = this.quantities[itemId] || 0;
+        if (quantity <= 0) {
+          // Show custom alert box instead of default alert
+          document.getElementById('customAlert').style.display = 'block';
+          return;
+        }
+        const item = this.items.find(item => item.id === itemId);
+        let cartArray = this.loadCart();
+        const existingItem = cartArray.find(i => i.id === itemId);
+        if (existingItem) {
+          existingItem.quantity += quantity;
+        } else {
+          cartArray.push({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            quantity: quantity
+          });
+        }
+        this.saveCart(cartArray);
+
+        // Update cart count
+        let currentCount = parseInt(localStorage.getItem('cartCount') || '0');
+        currentCount += quantity;
+        localStorage.setItem('cartCount', currentCount.toString());
+
+        // Visual feedback: success animation and attractive toast message
+        const addBtn = document.getElementById(`add-${itemId}`);
+        addBtn.classList.add('success-animation');
+        setTimeout(() => {
+          addBtn.classList.remove('success-animation');
+        }, 1000);
+
+        // Show attractive toast message "Added!"
+        const toast = document.getElementById('toast');
+        toast.classList.remove('toast-hide');
+        toast.classList.add('toast-show');
+        // After 1.5 seconds, hide the toast with a reverse animation
+        setTimeout(() => {
+          toast.classList.remove('toast-show');
+          toast.classList.add('toast-hide');
+        }, 1500);
+
+        // Reset quantity and update display.
+        this.quantities[itemId] = 0;
+        this.updateDisplay();
+      }
+    }
+
+    const favorites = new Favorites();
+
+    window.addEventListener('storage', () => {
+      favorites.items = favorites.loadFavorites();
+      favorites.updateDisplay();
+    });
+
+    function closeAlert() {
+      document.getElementById('customAlert').style.display = 'none';
+    }
+  </script>
+</body>
+
+</html>

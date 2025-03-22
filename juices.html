@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Beverages</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Ensure the container is relatively positioned so that absolute elements are positioned correctly */
+    .item-wrapper {
+      position: relative;
+    }
+
+    .item-cart-container {
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .item-quantity {
+      width: 50px;
+      text-align: center;
+      padding: 0.2rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .add-to-cart-btn {
+      background: #2c1810;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .add-to-cart-btn:hover {
+      background: #4a2c23;
+    }
+
+    /* Heart Icon styles */
+    .heart-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 36px;
+      color: white;
+      background-color: #4a2c23;
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    /* When favorited, icon turns red with a white background */
+    .heart-icon.favorited {
+      color: red;
+      background-color: white;
+    }
+
+    /* Hover effects for the heart icon */
+    .heart-icon:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="items-grid">
+    <!-- Orange Juice Item -->
+    <div class="item-wrapper">
+      <a href="juices.html" class="item-circle">
+        <img src="images/orange.jpeg" alt="Orange Juice" class="item-image">
+      </a>
+      <!-- Heart icon with data attributes (id, name, price) -->
+      <div class="heart-icon" data-id="oj1" data-name="Orange Juice" data-price="4.99">&#x2665;</div>
+      <div class="item-label">Orange Juice</div>
+      <div class="item-cart-container">
+        <input type="number" class="item-quantity" value="0" min="0">
+        <button class="add-to-cart-btn">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Iced Tea Item -->
+    <div class="item-wrapper">
+      <a href="details.html" class="item-circle">
+        <img src="images/icedTea.jpeg" alt="Iced Tea" class="item-image">
+      </a>
+      <div class="heart-icon" data-id="it1" data-name="Iced Tea" data-price="3.99">&#x2665;</div>
+      <div class="item-label">Iced Tea</div>
+      <div class="item-cart-container">
+        <input type="number" class="item-quantity" value="0" min="0">
+        <button class="add-to-cart-btn">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Lemonade Item -->
+    <div class="item-wrapper">
+      <a href="details.html" class="item-circle">
+        <img src="images/lemonade.jpeg" alt="Lemonade" class="item-image">
+      </a>
+      <div class="heart-icon" data-id="lm1" data-name="Lemonade" data-price="3.99">&#x2665;</div>
+      <div class="item-label">Lemonade</div>
+      <div class="item-cart-container">
+        <input type="number" class="item-quantity" value="0" min="0">
+        <button class="add-to-cart-btn">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Smoothie Item -->
+    <div class="item-wrapper">
+      <a href="details.html" class="item-circle">
+        <img src="images/smoothie.jpeg" alt="Smoothie" class="item-image">
+      </a>
+      <div class="heart-icon" data-id="sm1" data-name="Smoothie" data-price="5.99">&#x2665;</div>
+      <div class="item-label">Smoothie</div>
+      <div class="item-cart-container">
+        <input type="number" class="item-quantity" value="0" min="0">
+        <button class="add-to-cart-btn">Add to Cart</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Define our products with prices (used for cart functionality)
+    const products = {
+      'Orange Juice': { id: 'oj1', price: 4.99, image: 'images/orange.jpeg' },
+      'Iced Tea': { id: 'it1', price: 3.99, image: 'images/icedTea.jpeg' },
+      'Lemonade': { id: 'lm1', price: 3.99, image: 'images/lemonade.jpeg' },
+      'Smoothie': { id: 'sm1', price: 5.99, image: 'images/smoothie.jpeg' }
+    };
+
+    // Ensure cartCount is set to 0 initially if not present
+    if (localStorage.getItem('cartCount') === null) {
+      localStorage.setItem('cartCount', '0');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Add-to-cart button event listeners
+      const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+      addToCartButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const wrapper = button.closest('.item-wrapper');
+          const itemName = wrapper.querySelector('.item-label').textContent;
+          const quantity = parseInt(wrapper.querySelector('.item-quantity').value);
+          if (quantity > 0) {
+            const product = products[itemName];
+            addToCart({
+              id: product.id,
+              name: itemName,
+              price: product.price,
+              quantity: quantity
+            });
+            // Provide "Added" feedback
+            const originalText = button.textContent;
+            button.textContent = 'Added!';
+            button.style.backgroundColor = '#4a2c23';
+            setTimeout(() => {
+              button.textContent = originalText;
+              button.style.backgroundColor = '#2c1810';
+            }, 1000);
+            // Reset the quantity input
+            wrapper.querySelector('.item-quantity').value = 0;
+          }
+        });
+      });
+
+      // Heart icon event listeners for favorites
+      const heartIcons = document.querySelectorAll('.heart-icon');
+      heartIcons.forEach(icon => {
+        icon.addEventListener('click', (e) => {
+          // Prevent click from triggering parent events
+          e.stopPropagation();
+          const id = icon.getAttribute('data-id');
+          const name = icon.getAttribute('data-name');
+          const price = parseFloat(icon.getAttribute('data-price'));
+          toggleFavourite(icon, { id, name, price });
+        });
+      });
+    });
+
+    // Function to add an item to the cart and update the cart count
+    function addToCart(item) {
+      let cart = JSON.parse(localStorage.getItem('centralPerkCart')) || [];
+      const existingItem = cart.find(i => i.id === item.id);
+      if (existingItem) {
+        existingItem.quantity += item.quantity;
+      } else {
+        cart.push(item);
+      }
+      localStorage.setItem('centralPerkCart', JSON.stringify(cart));
+      let currentCount = parseInt(localStorage.getItem('cartCount') || '0');
+      currentCount += item.quantity;
+      localStorage.setItem('cartCount', currentCount);
+    }
+
+    // Function to toggle favorite status for an item
+    function toggleFavourite(icon, item) {
+      let favourites = JSON.parse(localStorage.getItem('centralPerkFavorites')) || [];
+      const existingIndex = favourites.findIndex(fav => fav.id === item.id);
+      if (existingIndex === -1) {
+        favourites.push(item);
+        localStorage.setItem('centralPerkFavorites', JSON.stringify(favourites));
+        icon.classList.add('favorited');
+        console.log(item.name + " added to favorites.");
+      } else {
+        favourites.splice(existingIndex, 1);
+        localStorage.setItem('centralPerkFavorites', JSON.stringify(favourites));
+        icon.classList.remove('favorited');
+        console.log(item.name + " removed from favorites.");
+      }
+    }
+  </script>
+</body>
+
+</html>

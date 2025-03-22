@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coffee Customizer - Central Perk</title>
+  <!-- Google Fonts: Playfair Display, Poppins -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap');
+
+    /* Global Resets and Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #1a0f0d, #3e2723);
+      color: #fff;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23ffffff10" d="M30,30L70,30L70,70L30,70Z"/></svg>'),
+        linear-gradient(135deg, #1a0f0d, #3e2723);
+      background-size: 30px 30px, cover;
+      animation: backgroundMove 60s linear infinite;
+      margin-top: 10%;
+    }
+
+    @keyframes backgroundMove {
+      0% {
+        background-position: 0 0, 0 0;
+      }
+
+      100% {
+        background-position: 100px 100px, 0 0;
+      }
+    }
+
+    /* Navigation Bar */
+    nav {
+      background: rgba(26, 15, 13, 0.95);
+      padding: 1.5rem 8%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      border-bottom: 1px solid rgba(199, 145, 111, 0.3);
+    }
+
+    .logo {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      position: relative;
+    }
+
+    .logo svg {
+      width: 48px;
+      height: 48px;
+      fill: #c7916f;
+      filter: drop-shadow(0 0 8px rgba(199, 145, 111, 0.5));
+      transition: transform 0.3s ease;
+    }
+
+    .logo:hover svg {
+      transform: rotate(-10deg);
+    }
+
+    .logo h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(to right, #e6c9a8, #c7916f);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: relative;
+    }
+
+    .logo h1::after {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(to right, #c7916f, transparent);
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 3px;
+    }
+
+    /* 
+      ADDITION #1:
+      A "top-left price" element to show the dynamic price 
+      (positioned near top-left, under nav).
+    */
+    .top-left-price {
+      position: fixed;
+      top: 80px;
+      /* slightly below nav bar */
+      left: 20px;
+      background: rgba(199, 145, 111, 0.3);
+      color: #fbe9e7;
+      font-size: 1.2rem;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      z-index: 999;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+
+    .top-left-price:hover {
+      background: rgba(199, 145, 111, 0.5);
+    }
+
+    /* Favorites Container – increased top margin so heading is not hidden */
+    .favorites-container {
+      margin-top: 160px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Page Title */
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 3rem;
+      position: relative;
+      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .page-title::after {
+      content: '';
+      display: block;
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(to right, transparent, #c7916f, transparent);
+      margin: 0.5rem auto;
+      border-radius: 2px;
+    }
+
+    .page-subtitle {
+      text-align: center;
+      color: #c7916f;
+      margin-bottom: 3rem;
+      font-size: 1.2rem;
+      opacity: 0.8;
+    }
+
+    /* Favorite Item */
+    .favorite-item {
+      display: flex;
+      flex-direction: column;
+      background: rgba(199, 145, 111, 0.15);
+      padding: 2rem;
+      border-radius: 20px;
+      border: 1px solid rgba(199, 145, 111, 0.3);
+      transition: all 0.4s ease;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .favorite-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><path fill="%23c7916f10" d="M38.1,-65.7C46.7,-55.9,49.4,-40.1,53.7,-26.3C57.9,-12.6,63.8,-0.9,64.6,11.5C65.4,23.9,61.2,37,51.6,44.8C42,52.6,26.9,55.1,13.5,55.6C0.1,56.2,-11.6,54.8,-25.3,52.1C-39,49.4,-54.8,45.3,-62.8,35.1C-70.8,24.8,-71,8.3,-66.7,-5.5C-62.3,-19.3,-53.3,-30.6,-42.7,-40.8C-32.1,-51.1,-19.9,-60.3,-5,-59.5C9.9,-58.7,29.4,-75.5,38.1,-65.7Z" transform="translate(100 100)"/></svg>');
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 60%;
+      opacity: 0.2;
+      z-index: 0;
+    }
+
+    .favorite-item:hover {
+      background: rgba(199, 145, 111, 0.25);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Item Header: Coffee Name with Price Beside It */
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .item-title {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      font-size: 2rem;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      display: inline-block;
+    }
+
+    .item-price {
+      font-weight: 600;
+      color: #e6c9a8;
+      font-size: 1.6rem;
+      background: rgba(199, 145, 111, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      display: inline-block;
+    }
+
+    /* Coffee Cup Visualization – Fixed on Screen (unchanged) */
+    .cup-visualization {
+      flex: 0 0 280px;
+      position: absolute;
+      top: 20%;
+      left: 6%;
+      height: 350px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1000px;
+      z-index: 100;
+    }
+
+    .coffee-cup {
+      position: relative;
+      width: 220px;
+      height: 280px;
+      margin: 0 auto;
+      transform-style: preserve-3d;
+      animation: floatCup 4s ease-in-out infinite;
+    }
+
+    @keyframes floatCup {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(0);
+      }
+
+      50% {
+        transform: translateY(-10px) rotate(2deg);
+      }
+    }
+
+    .cup-body {
+      position: absolute;
+      width: 180px;
+      height: 220px;
+      background: #fff;
+      border-radius: 0 0 70px 70px / 0 0 110px 110px;
+      background: linear-gradient(to right, #f3f3f3, #e0e0e0);
+      top: 60px;
+      left: 20px;
+      box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.2), inset -10px 0px 15px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      z-index: 1;
+      transform: translateZ(0);
+    }
+
+    .cup-handle {
+      position: absolute;
+      width: 60px;
+      height: 80px;
+      border: 12px solid #e0e0e0;
+      border-radius: 20px 40px 40px 20px / 40px 40px 40px 40px;
+      right: 0;
+      top: 110px;
+      box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 0;
+      transform: translateZ(-20px);
+    }
+
+    .cup-top {
+      position: absolute;
+      width: 180px;
+      height: 40px;
+      background: linear-gradient(to right, #f3f3f3, #e0e0e0);
+      border-radius: 50%;
+      top: 60px;
+      left: 20px;
+      box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.1);
+      z-index: 2;
+      transform: translateZ(5px);
+    }
+
+    .coffee-fill {
+      position: absolute;
+      width: 170px;
+      height: 70%;
+      /* Default fill for House Blend */
+      background: #6f4e37;
+      bottom: 9px;
+      left: 5px;
+      border-radius: 0 0 60px 60px / 0 0 100px 100px;
+      transition: height 1s ease, background 0.5s ease;
+      z-index: 1;
+      box-shadow: inset 0 -10px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .cup-shine {
+      position: absolute;
+      width: 30px;
+      height: 160px;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+      top: 80px;
+      left: 40px;
+      border-radius: 15px;
+      transform: rotate(15deg);
+      opacity: 0.5;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .steam {
+      position: absolute;
+      width: 8px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 20px;
+      top: 30px;
+      opacity: 0;
+      filter: blur(2px);
+    }
+
+    .steam:nth-child(1) {
+      left: 40px;
+      height: 40px;
+      animation: steam 2s infinite ease-out 0.4s;
+    }
+
+    .steam:nth-child(2) {
+      left: 80px;
+      height: 50px;
+      animation: steam 2s infinite ease-out 0.6s;
+    }
+
+    .steam:nth-child(3) {
+      left: 120px;
+      height: 45px;
+      animation: steam 2s infinite ease-out 0.2s;
+    }
+
+    @keyframes steam {
+      0% {
+        transform: translateY(0) scaleX(1);
+        opacity: 0;
+      }
+
+      15% {
+        opacity: 1;
+      }
+
+      50% {
+        transform: translateY(-80px) scaleX(5);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: translateY(-120px) scaleX(10);
+        opacity: 0;
+      }
+    }
+
+    .cup-plate {
+      position: absolute;
+      width: 220px;
+      height: 20px;
+      background: linear-gradient(to right, #f3f3f3, #e0e0e0);
+      border-radius: 50%;
+      bottom: 0;
+      left: 0;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      transform: translateZ(-10px);
+    }
+
+    .coffee-ripples {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* Ambiance decoration */
+    .coffee-beans {
+      position: absolute;
+      width: 20px;
+      height: 25px;
+      background: #3e2723;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      transform: rotate(45deg);
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .bean-1 {
+      bottom: 30px;
+      left: 20px;
+      transform: rotate(15deg) scale(0.8);
+    }
+
+    .bean-2 {
+      bottom: 50px;
+      right: 30px;
+      transform: rotate(65deg) scale(1.2);
+    }
+
+    .bean-3 {
+      bottom: 10px;
+      left: 50%;
+      transform: rotate(30deg);
+    }
+
+    /* Customization Options – pushed to the right */
+    .customize-options {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-left: 320px;
+    }
+
+    .option-section {
+      background: rgba(199, 145, 111, 0.2);
+      border-radius: 15px;
+      padding: 1.2rem;
+      border: 1px solid rgba(199, 145, 111, 0.3);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-section:hover {
+      background: rgba(199, 145, 111, 0.25);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .option-section::before {
+      content: '';
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      width: 40px;
+      height: 40px;
+      background: #c7916f;
+      opacity: 0.2;
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    .option-title {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+      position: relative;
+      display: inline-block;
+      z-index: 1;
+    }
+
+    .option-title::after {
+      content: '';
+      position: absolute;
+      width: 30px;
+      height: 2px;
+      background: #c7916f;
+      bottom: -3px;
+      left: 0;
+      border-radius: 2px;
+    }
+
+    .option-choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .option-choice {
+      background: rgba(199, 145, 111, 0.3);
+      border: 1px solid rgba(199, 145, 111, 0.5);
+      border-radius: 30px;
+      padding: 0.6rem 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .option-choice::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+
+    .option-choice:hover {
+      background: rgba(199, 145, 111, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .option-choice:hover::before {
+      transform: translateX(100%);
+    }
+
+    .option-choice.selected {
+      background: #c7916f;
+      color: #fff;
+      border-color: #a16c50;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+      font-weight: 500;
+    }
+
+    .option-choice.selected::after {
+      content: '✓';
+      margin-left: 6px;
+      font-weight: bold;
+    }
+
+    /* Slider for Sugar Level */
+    .sugar-slider {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 10px;
+      background: rgba(199, 145, 111, 0.3);
+      border-radius: 5px;
+      outline: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slider::-webkit-slider-runnable-track {
+      height: 10px;
+      border-radius: 5px;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #e6c9a8;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      position: relative;
+      margin-top: -6px;
+      transition: transform 0.2s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #e6c9a8;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      border: none;
+      transition: transform 0.2s ease;
+    }
+
+    .slider::-moz-range-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .slider::-webkit-slider-thumb::before {
+      content: '';
+      position: absolute;
+      height: 10px;
+      width: 500px;
+      left: -500px;
+      top: 6px;
+      background: #c7916f;
+    }
+
+    .slider::-moz-range-progress {
+      background-color: #c7916f;
+      height: 10px;
+      border-radius: 5px 0 0 5px;
+    }
+
+    .slider-value {
+      width: 50px;
+      text-align: center;
+      font-weight: 600;
+      color: #e6c9a8;
+      background: rgba(199, 145, 111, 0.3);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Cart Controls */
+    .cart-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+      position: relative;
+      z-index: 101;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      background: rgba(199, 145, 111, 0.2);
+      border-radius: 50px;
+      padding: 0.3rem;
+      border: 1px solid rgba(199, 145, 111, 0.3);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .qty-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(199, 145, 111, 0.4);
+      color: #fff;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .qty-btn:hover {
+      background: rgba(199, 145, 111, 0.6);
+      transform: scale(1.1);
+    }
+
+    .qty-display {
+      width: 50px;
+      text-align: center;
+      font-weight: 600;
+      color: #e6c9a8;
+      font-size: 1.2rem;
+    }
+
+    .add-to-cart,
+    .go-to-cart {
+      background: linear-gradient(to right, #c7916f, #a16c50);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      box-shadow: 0 8px 20px rgba(161, 108, 80, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .add-to-cart::before,
+    .go-to-cart::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+
+    .add-to-cart:hover,
+    .go-to-cart:hover {
+      background: linear-gradient(to right, #a16c50, #8d5d43);
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(161, 108, 80, 0.5);
+    }
+
+    .add-to-cart:hover::before,
+    .go-to-cart:hover::before {
+      transform: translateX(100%);
+    }
+
+    .add-to-cart svg,
+    .go-to-cart svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+      filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
+    }
+
+    /* Notification Styles */
+    #notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      border-radius: 5px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1001;
+    }
+
+    #notification.show {
+      opacity: 1;
+    }
+
+    /*
+      ADDITION #2:
+      A custom "alert" modal to replace the default alert().
+      We'll show/hide this with showThemedAlert().
+    */
+    #themedAlert {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    #themedAlert.show {
+      display: flex;
+    }
+
+    .themed-alert-box {
+      background: rgba(26, 15, 13, 0.95);
+      border: 1px solid rgba(199, 145, 111, 0.5);
+      border-radius: 15px;
+      padding: 2rem;
+      max-width: 350px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .themed-alert-box h2 {
+      font-family: 'Playfair Display', serif;
+      color: #e6c9a8;
+      margin-bottom: 1rem;
+    }
+
+    .themed-alert-box p {
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+
+    .themed-alert-close {
+      background: linear-gradient(to right, #c7916f, #a16c50);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .themed-alert-close:hover {
+      background: linear-gradient(to right, #a16c50, #8d5d43);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navigation Bar -->
+  <nav>
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 24 24">
+        <path
+          d="M2,21V19H20V21H2M20,8V5H18V8H20M20,3A2,2 0 0,1 22,5V8A2,2 0 0,1 20,10H18V13A4,4 0 0,1 14,17H8A4,4 0 0,1 4,13V3H20M16,5H6V13A2,2 0 0,0 8,15H14A2,2 0 0,0 16,13V5Z">
+        </path>
+      </svg>
+      <h1>Central Perk</h1>
+    </a>
+  </nav>
+
+  <!-- ADDITION #1: Top-left Price Display -->
+  <div class="top-left-price" id="topLeftPrice">$0.00</div>
+
+  <!-- Main Content -->
+  <div class="favorites-container">
+    <h1 class="page-title">Coffee Customizer</h1>
+    <p class="page-subtitle">Create your perfect coffee blend with our interactive customizer</p>
+
+    <div class="favorite-item">
+      <div class="item-header">
+        <h2 class="item-title">Espresso Blend</h2>
+        <span class="item-price" id="totalPrice">$4.50</span>
+      </div>
+
+      <div class="coffee-customizer">
+        <!-- Coffee Cup Visualization -->
+        <div class="cup-visualization">
+          <div class="coffee-cup">
+            <div class="steam"></div>
+            <div class="steam"></div>
+            <div class="steam"></div>
+            <div class="cup-top"></div>
+            <div class="cup-body">
+              <div id="coffeeFill" class="coffee-fill"></div>
+              <div class="cup-shine"></div>
+            </div>
+            <div class="cup-handle"></div>
+            <div class="cup-plate"></div>
+            <div class="coffee-ripples" id="coffeeRipples"></div>
+            <!-- Decoration elements -->
+            <div class="coffee-beans bean-1"></div>
+            <div class="coffee-beans bean-2"></div>
+            <div class="coffee-beans bean-3"></div>
+          </div>
+        </div>
+
+        <!-- Customization Options -->
+        <div class="customize-options">
+          <!-- Coffee Beans Selection with different prices -->
+          <div class="option-section">
+            <h3 class="option-title">Coffee Beans</h3>
+            <div class="option-choices" id="beanChoices">
+              <div class="option-choice selected" data-value="house" data-color="#6f4e37" data-price="4.50">House Blend
+                ($4.50)</div>
+              <div class="option-choice" data-value="dark" data-color="#3e2723" data-price="4.75">Dark Roast ($4.75)
+              </div>
+              <div class="option-choice" data-value="light" data-color="#a17f68" data-price="4.25">Light Blend ($4.25)
+              </div>
+              <div class="option-choice" data-value="decaf" data-color="#8d6e63" data-price="4.00">Decaf ($4.00)</div>
+            </div>
+          </div>
+
+          <!-- Milk Options: Default No Milk selected -->
+          <div class="option-section">
+            <h3 class="option-title">Milk Type</h3>
+            <div class="option-choices" id="milkChoices">
+              <div class="option-choice selected" data-value="none" data-fill="0">No Milk</div>
+              <div class="option-choice" data-value="whole" data-fill="50">Whole Milk</div>
+              <div class="option-choice" data-value="skim" data-fill="50">Skim Milk</div>
+              <div class="option-choice" data-value="almond" data-fill="50">Almond Milk</div>
+              <div class="option-choice" data-value="oat" data-fill="50">Oat Milk</div>
+            </div>
+          </div>
+
+          <!-- Sugar Level: Default 2 -->
+          <div class="option-section">
+            <h3 class="option-title">Sugar Level</h3>
+            <div class="sugar-slider">
+              <div class="slider-container">
+                <span>None</span>
+                <input type="range" min="0" max="5" value="2" class="slider" id="sugarSlider">
+                <span>Extra</span>
+              </div>
+              <div class="slider-container">
+                <span>Level:</span>
+                <div class="slider-value" id="sugarValue">2</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Options -->
+          <div class="option-section">
+            <h3 class="option-title">Add-ins</h3>
+            <div class="option-choices" id="addinChoices">
+              <div class="option-choice" data-value="cinnamon">Cinnamon</div>
+              <div class="option-choice" data-value="caramel">Caramel</div>
+              <div class="option-choice" data-value="vanilla">Vanilla</div>
+              <div class="option-choice" data-value="chocolate">Chocolate</div>
+              <div class="option-choice" data-value="whipped">Whipped Cream</div>
+            </div>
+          </div>
+
+          <!-- Cart Controls -->
+          <div class="cart-section">
+            <div class="quantity-controls">
+              <button class="qty-btn" id="decreaseQty">-</button>
+              <span class="qty-display" id="quantityValue">0</span>
+              <button class="qty-btn" id="increaseQty">+</button>
+            </div>
+            <button class="add-to-cart" id="addToCart">
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M17,18C15.89,18 15,18.89 15,20A2,2 0 0,0 17,22A2,2 0 0,0 19,20C19,18.89 18.1,18 17,18M1,2V4H3L6.6,11.59L5.24,14.04C5.09,14.32 5,14.65 5,15A2,2 0 0,0 7,17H19V15H7.42A0.25,0.25 0 0,1 7.17,14.75C7.17,14.7 7.18,14.66 7.2,14.63L8.1,13H15.55C16.3,13 16.96,12.58 17.3,11.97L20.88,5.5C20.95,5.34 21,5.17 21,5A1,1 0 0,0 20,4H5.21L4.27,2M7,18C5.89,18 5,18.89 5,20A2,2 0 0,0 7,22A2,2 0 0,0 9,20C9,18.89 8.1,18 7,18Z">
+                </path>
+              </svg>
+              Add to Cart
+            </button>
+            <!-- Go to Cart button -->
+            <button class="go-to-cart" id="goToCart">
+              <svg viewBox="0 0 24 24">
+                <path d="M10 17l5-5-5-5v10z" />
+              </svg>
+              Go to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Element -->
+  <div id="notification">
+    <p id="notificationMessage"></p>
+  </div>
+
+  <!-- ADDITION #2: Themed Alert Modal -->
+  <div id="themedAlert">
+    <div class="themed-alert-box">
+      <h2>Alert</h2>
+      <p id="themedAlertMessage"></p>
+      <button class="themed-alert-close" onclick="closeThemedAlert()">OK</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Elements for coffee visualization and pricing
+      const coffeeFill = document.getElementById('coffeeFill');
+      const coffeeRipples = document.getElementById('coffeeRipples');
+      const totalPriceElement = document.getElementById('totalPrice');
+      // The new top-left price
+      const topLeftPriceElement = document.getElementById('topLeftPrice');
+
+      // Coffee customization elements
+      const beanChoices = document.querySelectorAll('#beanChoices .option-choice');
+      const milkChoices = document.querySelectorAll('#milkChoices .option-choice');
+      const addinChoices = document.querySelectorAll('#addinChoices .option-choice');
+      const sugarSlider = document.getElementById('sugarSlider');
+      const sugarValue = document.getElementById('sugarValue');
+
+      // Cart control elements
+      const decreaseQty = document.getElementById('decreaseQty');
+      const increaseQty = document.getElementById('increaseQty');
+      const quantityValue = document.getElementById('quantityValue');
+      const addToCartBtn = document.getElementById('addToCart');
+      const goToCartBtn = document.getElementById('goToCart');
+      const notification = document.getElementById('notification');
+      const notificationMessage = document.getElementById('notificationMessage');
+
+      // Themed alert modal elements
+      const themedAlert = document.getElementById('themedAlert');
+      const themedAlertMessage = document.getElementById('themedAlertMessage');
+
+      // Set default state (defaults: House Blend, No Milk, Sugar level 2, Quantity 0)
+      const coffeeState = {
+        bean: 'house',
+        milk: 'none',
+        sugar: 2,
+        addins: [],
+        quantity: 0,
+        beanColor: '#6f4e37',
+        fillLevel: 0,
+        basePrice: 4.50
+      };
+
+      // Extra costs
+      const milkExtraCost = 0.50;
+      const addinCost = 0.25;
+
+      // Initialize visualization
+      updateCoffeeVisualization();
+
+      // A function for a custom, themed alert
+      function showThemedAlert(msg) {
+        themedAlertMessage.textContent = msg;
+        themedAlert.classList.add('show');
+      }
+      window.closeThemedAlert = function () {
+        themedAlert.classList.remove('show');
+      };
+
+      // Function to create ripple effect
+      function createRipple() {
+        const ripple = document.createElement('div');
+        ripple.style.position = 'absolute';
+        ripple.style.width = '20px';
+        ripple.style.height = '20px';
+        ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+        ripple.style.borderRadius = '50%';
+        const left = 20 + Math.random() * 130;
+        const top = 70 + Math.random() * 130;
+        ripple.style.left = left + "px";
+        ripple.style.top = top + "px";
+        ripple.style.transform = 'scale(0)';
+        ripple.style.opacity = '0.5';
+        ripple.style.animation = 'ripple 2s ease-out forwards';
+        coffeeRipples.appendChild(ripple);
+        setTimeout(() => { ripple.remove(); }, 2000);
+      }
+      setInterval(createRipple, 3000);
+
+      // Bean selection: update base price from data-price
+      beanChoices.forEach(choice => {
+        choice.addEventListener('click', () => {
+          beanChoices.forEach(c => c.classList.remove('selected'));
+          choice.classList.add('selected');
+          coffeeState.bean = choice.dataset.value;
+          coffeeState.beanColor = choice.dataset.color;
+          coffeeState.basePrice = parseFloat(choice.dataset.price);
+          updateCoffeeVisualization();
+          createRipple();
+          createRipple();
+        });
+      });
+
+      // Milk selection
+      milkChoices.forEach(choice => {
+        choice.addEventListener('click', () => {
+          milkChoices.forEach(c => c.classList.remove('selected'));
+          choice.classList.add('selected');
+          coffeeState.milk = choice.dataset.value;
+          coffeeState.fillLevel = parseInt(choice.dataset.fill);
+          updateCoffeeVisualization();
+          createRipple();
+        });
+      });
+
+      // Add-ins selection
+      addinChoices.forEach(choice => {
+        choice.addEventListener('click', () => {
+          const value = choice.dataset.value;
+          if (choice.classList.contains('selected')) {
+            choice.classList.remove('selected');
+            coffeeState.addins = coffeeState.addins.filter(item => item !== value);
+          } else {
+            choice.classList.add('selected');
+            coffeeState.addins.push(value);
+          }
+          updateCoffeeVisualization();
+          createRipple();
+        });
+      });
+
+      // Sugar slider
+      sugarSlider.addEventListener('input', () => {
+        coffeeState.sugar = parseInt(sugarSlider.value);
+        sugarValue.textContent = sugarSlider.value;
+        updateCoffeeVisualization();
+      });
+
+      // Quantity controls
+      decreaseQty.addEventListener('click', () => {
+        if (coffeeState.quantity > 0) {
+          coffeeState.quantity--;
+          quantityValue.textContent = coffeeState.quantity;
+          updateCoffeeVisualization();
+        }
+      });
+      increaseQty.addEventListener('click', () => {
+        coffeeState.quantity++;
+        quantityValue.textContent = coffeeState.quantity;
+        updateCoffeeVisualization();
+      });
+
+      // Add to Cart: Save order to localStorage and show notification
+      addToCartBtn.addEventListener('click', () => {
+        if (coffeeState.quantity <= 0) {
+          // Use themed alert instead of window.alert
+          showThemedAlert('Please select a quantity greater than 0');
+          return;
+        }
+        // Calculate total price and derive unit price
+        const totalPrice = calculateTotalPrice();
+        const unitPrice = totalPrice / coffeeState.quantity;
+        // Create order with fixed id and name "Special Coffee"
+        const order = {
+          id: 'special_coffee',
+          name: 'Special Coffee',
+          price: unitPrice,
+          quantity: coffeeState.quantity
+        };
+        let orders = JSON.parse(localStorage.getItem('centralPerkCart')) || [];
+        orders.push(order);
+        localStorage.setItem('centralPerkCart', JSON.stringify(orders));
+        const orderSummary = `${coffeeState.quantity} Special Coffee added to cart for a total of $${totalPrice.toFixed(2)}`;
+        notificationMessage.textContent = orderSummary;
+        notification.classList.add('show');
+        for (let i = 0; i < 5; i++) {
+          setTimeout(createRipple, i * 200);
+        }
+        setTimeout(() => { notification.classList.remove('show'); }, 3000);
+        resetForm();
+      });
+
+      // Go to Cart: Redirect to cart.html
+      goToCartBtn.addEventListener('click', () => {
+        window.location.href = 'cart.html';
+      });
+
+      // Calculate total price
+      function calculateTotalPrice() {
+        let extra = 0;
+        if (coffeeState.milk && coffeeState.milk !== 'none') {
+          extra += milkExtraCost;
+        }
+        extra += coffeeState.addins.length * addinCost;
+        const pricePerCup = coffeeState.basePrice + extra;
+        return pricePerCup * coffeeState.quantity;
+      }
+
+      // Function to update price display
+      function updatePrice() {
+        const currentTotal = calculateTotalPrice().toFixed(2);
+        // Update the "main" price display in the item header
+        totalPriceElement.textContent = "$" + currentTotal;
+        // Also update the new top-left price
+        topLeftPriceElement.textContent = "$" + currentTotal;
+      }
+
+      // Update visualization and price display
+      function updateCoffeeVisualization() {
+        if (!coffeeState.bean) {
+          coffeeFill.style.height = '0';
+          coffeeFill.style.background = 'transparent';
+        } else {
+          coffeeFill.style.background = coffeeState.beanColor;
+          if (!coffeeState.milk || coffeeState.milk === 'none') {
+            coffeeFill.style.height = '70%';
+          } else {
+            coffeeFill.style.height = '90%';
+            const milkColor = coffeeState.milk === 'skim' ? '#f5f5f5' :
+              coffeeState.milk === 'almond' ? '#f0e6d2' :
+                coffeeState.milk === 'oat' ? '#e6d7b8' : '#fffaf5';
+            coffeeFill.style.background = `linear-gradient(to top, ${coffeeState.beanColor} 60%, ${milkColor} 100%)`;
+          }
+        }
+        const steamElements = document.querySelectorAll('.steam');
+        if (coffeeState.addins.includes('cinnamon')) {
+          steamElements.forEach(steam => steam.style.background = 'rgba(210, 180, 140, 0.5)');
+        } else if (coffeeState.addins.includes('vanilla')) {
+          steamElements.forEach(steam => steam.style.background = 'rgba(255, 250, 240, 0.5)');
+        } else if (coffeeState.addins.includes('caramel')) {
+          steamElements.forEach(steam => steam.style.background = 'rgba(210, 170, 120, 0.5)');
+        } else if (coffeeState.addins.includes('chocolate')) {
+          steamElements.forEach(steam => steam.style.background = 'rgba(110, 80, 70, 0.5)');
+        } else {
+          steamElements.forEach(steam => steam.style.background = 'rgba(255, 255, 255, 0.5)');
+        }
+        if (coffeeState.addins.includes('whipped')) {
+          let whippedCream = document.querySelector('.whipped-cream');
+          if (!whippedCream) {
+            whippedCream = document.createElement('div');
+            whippedCream.className = 'whipped-cream';
+            whippedCream.style.position = 'absolute';
+            whippedCream.style.width = '180px';
+            whippedCream.style.height = '70px';
+            whippedCream.style.background = '#fff8f5';
+            whippedCream.style.top = '10px';
+            whippedCream.style.left = '20px';
+            whippedCream.style.borderRadius = '90px 90px 10px 10px';
+            whippedCream.style.zIndex = '3';
+            whippedCream.style.boxShadow = 'inset 0 -5px 10px rgba(0,0,0,0.1)';
+            document.querySelector('.coffee-cup').appendChild(whippedCream);
+          }
+        } else {
+          const whippedCream = document.querySelector('.whipped-cream');
+          if (whippedCream) { whippedCream.remove(); }
+        }
+        if (coffeeState.sugar > 3) {
+          coffeeFill.style.boxShadow = 'inset 0 -10px 20px rgba(0, 0, 0, 0.3)';
+        } else {
+          coffeeFill.style.boxShadow = 'inset 0 -10px 15px rgba(0, 0, 0, 0.2)';
+        }
+        if (coffeeState.milk && coffeeState.milk !== 'none') {
+          steamElements.forEach(steam => {
+            steam.style.opacity = '1';
+            steam.style.animation = 'steam 2s infinite ease-out';
+          });
+        } else {
+          steamElements.forEach(steam => {
+            steam.style.opacity = '1';
+            steam.style.animation = 'steam 1.5s infinite ease-out';
+          });
+        }
+        updatePrice();
+      }
+
+      // Reset form to defaults (House Blend, No Milk, Sugar 2, Quantity 0)
+      function resetForm() {
+        coffeeState.bean = 'house';
+        coffeeState.milk = 'none';
+        coffeeState.sugar = 2;
+        coffeeState.addins = [];
+        coffeeState.quantity = 0;
+        coffeeState.beanColor = '#6f4e37';
+        coffeeState.basePrice = 4.50;
+        quantityValue.textContent = '0';
+        sugarSlider.value = '2';
+        sugarValue.textContent = '2';
+        beanChoices.forEach(choice => {
+          choice.classList.remove('selected');
+          if (choice.dataset.value === 'house') { choice.classList.add('selected'); }
+        });
+        milkChoices.forEach(choice => {
+          choice.classList.remove('selected');
+          if (choice.dataset.value === 'none') { choice.classList.add('selected'); }
+        });
+        addinChoices.forEach(choice => choice.classList.remove('selected'));
+        updateCoffeeVisualization();
+      }
+    });
+  </script>
+</body>
+
+</html>

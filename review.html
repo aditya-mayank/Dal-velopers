@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Reviews</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      transition: background 3s ease-in-out;
+      animation: changeBg 10s infinite alternate;
+    }
+
+    @keyframes changeBg {
+      0% {
+        background-image: url('https://www.centralparktoursnyc.com/wp-content/uploads/2022/06/central-perk-coffee-shop-1024x683.jpg');
+      }
+
+      50% {
+        background-image: url('https://www.tasteofhome.com/wp-content/uploads/2023/11/Getty-1307259065-Resize-Recolor-Crop-DH-TOH-Central-Perk-Coffee-Shop.jpg');
+      }
+
+      100% {
+        background-image: url('https://offloadmedia.feverup.com/secretnyc.co/wp-content/uploads/2018/02/10124630/central-perk1.jpg');
+      }
+    }
+
+    .container {
+      width: 40%;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      animation: fadeIn 1.5s ease-in-out;
+    }
+
+    input {
+      width: 50%;
+      padding: 8px;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 15px;
+      font-size: 16px;
+    }
+
+    button {
+      background: #6f4e37;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #563f2e;
+    }
+
+    /* Extra top margin for submit button */
+    .submit-button {
+      margin-top: 15px;
+    }
+
+    .rating span {
+      cursor: pointer;
+      font-size: 24px;
+      color: lightgray;
+      transition: color 0.3s;
+    }
+
+    .rating span.selected {
+      color: gold;
+    }
+
+    .reviews {
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .review {
+      background: #f8f8f8;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 5px;
+      position: relative;
+      text-align: left;
+    }
+
+    /* Styling for the icon buttons and their container */
+    .post-icons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .icon-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    /* Brown thumbs up style */
+    .thumbs-up {
+      color: #A52A2A;
+    }
+
+    /* Enhanced styling for the comment section */
+    .comments {
+      margin-top: 10px;
+      padding: 20px;
+      background: linear-gradient(135deg, #f9f9f9, #eaeaea);
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: none;
+    }
+
+    .comments:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .comments h4 {
+      margin: 5px 0;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .comments ul {
+      list-style-type: none;
+      margin: 10px 0;
+      padding: 0;
+    }
+
+    .comments li {
+      margin: 8px 0;
+      font-size: 14px;
+      padding: 5px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .comments li:last-child {
+      border-bottom: none;
+    }
+
+    .comment-input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .comment-input:focus {
+      border-color: #6f4e37;
+    }
+
+    .comments button {
+      margin-top: 10px;
+      background: #6f4e37;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .comments button:hover {
+      background: #563f2e;
+    }
+
+    /* Scrollbar styling: light track with brown tint, dark thumb */
+    ::-webkit-scrollbar {
+      width: 12px;
+      background-color: #f8efe6;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #2c1810;
+      border-radius: 10px;
+      border: 2px solid #f8efe6;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4a2c23;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="review-form">
+      <h2>Leave a Review</h2>
+      <input type="text" id="name" placeholder="Your Name" /><br />
+      <input type="text" id="review" placeholder="Write Your Review" />
+      <div class="rating" id="rating">
+        <span data-value="1">★</span>
+        <span data-value="2">★</span>
+        <span data-value="3">★</span>
+        <span data-value="4">★</span>
+        <span data-value="5">★</span>
+      </div>
+      <button class="submit-button" onclick="addReview()">Submit Review</button>
+    </div>
+    <div>
+      <button onclick="sortReviews('newest')">Newest</button>
+      <button onclick="sortReviews('highest')">Highest Rated</button>
+    </div>
+    <div id="reviews" class="reviews"></div>
+  </div>
+  <script>
+    let selectedRating = 0;
+    let reviewsData = [];
+
+    // Initialize star rating selection
+    document.querySelectorAll('.rating span').forEach(star => {
+      star.addEventListener('click', function () {
+        selectedRating = this.getAttribute('data-value');
+        document.querySelectorAll('.rating span').forEach(s => s.classList.remove('selected'));
+        for (let i = 0; i < selectedRating; i++) {
+          document.querySelectorAll('.rating span')[i].classList.add('selected');
+        }
+      });
+    });
+
+    // Add a new review
+    function addReview() {
+      let name = document.getElementById('name').value;
+      let reviewText = document.getElementById('review').value;
+      if (!name || !reviewText || selectedRating === 0) return;
+
+      let reviewObj = {
+        name: name,
+        reviewText: reviewText,
+        rating: parseInt(selectedRating),
+        timestamp: Date.now(),
+        likes: 0,
+        liked: false, // Added property to track if the review is liked
+        comments: []
+      };
+      reviewsData.unshift(reviewObj);
+      renderReviews();
+
+      // Reset form fields
+      document.getElementById('name').value = '';
+      document.getElementById('review').value = '';
+      document.querySelectorAll('.rating span').forEach(s => s.classList.remove('selected'));
+      selectedRating = 0;
+    }
+
+    // Render reviews; show "Be the First One to Review" if none exist
+    function renderReviews() {
+      let reviewContainer = document.getElementById('reviews');
+      reviewContainer.innerHTML = '';
+      if (reviewsData.length === 0) {
+        reviewContainer.innerHTML = '<p>Be the First One to Review</p>';
+      } else {
+        reviewsData.forEach((review, index) => {
+          let reviewDiv = document.createElement('div');
+          reviewDiv.classList.add('review');
+          reviewDiv.innerHTML = `
+            <h3>${review.name}</h3>
+            <p>${review.reviewText}</p>
+            <p>Rating: ${'★'.repeat(review.rating)}</p>
+            <div class="post-icons">
+              <button onclick="likeReview(${index})" class="icon-button thumbs-up">👍</button>
+              <span id="like-count-${index}">${review.likes}</span>
+              <button onclick="toggleComments(${index})" class="icon-button">💬</button>
+              <span id="comment-count-${index}">${review.comments.length}</span>
+            </div>
+            <div class="comments" id="comments-${index}">
+              <h4>Comments:</h4>
+              <ul id="comment-list-${index}">
+                ${review.comments.map(comment => `<li>${comment}</li>`).join('')}
+              </ul>
+              <input type="text" id="comment-input-${index}" class="comment-input" placeholder="Add a comment">
+              <button onclick="addComment(${index})">Submit Comment</button>
+            </div>
+            <button onclick="editReview(${index})">Edit</button>
+            <button onclick="deleteReview(${index})">Delete</button>
+          `;
+          reviewContainer.appendChild(reviewDiv);
+        });
+      }
+    }
+
+    // Toggle like for a review
+    function likeReview(index) {
+      // Toggle like: if not liked, then like; if liked, then unlike.
+      if (!reviewsData[index].liked) {
+        reviewsData[index].likes++;
+        reviewsData[index].liked = true;
+      } else {
+        reviewsData[index].likes--;
+        reviewsData[index].liked = false;
+      }
+      document.getElementById(`like-count-${index}`).innerText = reviewsData[index].likes;
+    }
+
+    // Toggle visibility of comment section
+    function toggleComments(index) {
+      const commentsDiv = document.getElementById(`comments-${index}`);
+      if (commentsDiv.style.display === "none" || commentsDiv.style.display === "") {
+        commentsDiv.style.display = "block";
+      } else {
+        commentsDiv.style.display = "none";
+      }
+    }
+
+    // Add a comment to a review and refresh display
+    function addComment(index) {
+      let commentInput = document.getElementById(`comment-input-${index}`);
+      let commentText = commentInput.value;
+      if (commentText.trim() === '') return;
+      reviewsData[index].comments.push(commentText);
+      commentInput.value = '';
+      renderReviews();
+    }
+
+    // Edit a review by repopulating the input fields, then remove it
+    function editReview(index) {
+      let review = reviewsData[index];
+      document.getElementById('name').value = review.name;
+      document.getElementById('review').value = review.reviewText;
+      reviewsData.splice(index, 1);
+      renderReviews();
+    }
+
+    // Delete a review and refresh display
+    function deleteReview(index) {
+      reviewsData.splice(index, 1);
+      renderReviews();
+    }
+
+    // Sort reviews either by newest or highest rating
+    function sortReviews(criteria) {
+      if (criteria === 'newest') {
+        reviewsData.sort((a, b) => b.timestamp - a.timestamp);
+      } else if (criteria === 'highest') {
+        reviewsData.sort((a, b) => b.rating - a.rating);
+      }
+      renderReviews();
+    }
+
+    // Initial render to show "Be the First One to Review"
+    renderReviews();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Coffee Payment Gateway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reset and Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f3e9dc, #d3a375);
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .coffee-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://ca-times.brightspotcdn.com/dims4/default/3fe7587/2147483647/strip/true/crop/2016x1512+0+0/resize/1200x900!/quality/75/?url=https%3A%2F%2Fcalifornia-times-brightspot.s3.amazonaws.com%2F04%2F70%2F087dae0942b19a6f3f49d7f3ec1a%2Fstudio-tour-5.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            opacity: 0.45;
+            z-index: -1;
+        }
+
+        .payment-container {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            width: 100%;
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .payment-container h2 {
+            margin-bottom: 20px;
+            color: #6F4E37;
+        }
+
+        .payment-form label {
+            display: block;
+            margin-bottom: 5px;
+            color: #6F4E37;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .payment-form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 15px;
+            font-size: 1rem;
+        }
+
+        .payment-form input:focus {
+            border-color: #a67c52;
+            outline: none;
+        }
+
+        .payment-summary {
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .payment-summary p {
+            font-size: 1rem;
+            margin: 5px 0;
+            color: #333;
+        }
+
+        .pay-btn {
+            width: 100%;
+            padding: 12px;
+            background: #6F4E37;
+            color: #fff;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .pay-btn:hover {
+            background: #5a3e2a;
+        }
+
+        .confirmation {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+            background: #e0ffe0;
+            border: 1px solid #b2d8b2;
+            border-radius: 5px;
+            color: #2d662d;
+            font-size: 1.1rem;
+        }
+
+        .confirmation img {
+            width: 100%;
+            max-width: 250px;
+            margin-top: 15px;
+        }
+
+        /* Scrollbar styling: light track with brown tint, dark thumb */
+        ::-webkit-scrollbar {
+            width: 12px;
+            background-color: #f8efe6;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2c1810;
+            border-radius: 10px;
+            border: 2px solid #f8efe6;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a2c23;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="coffee-bg"></div>
+    <div class="payment-container">
+        <h2>Final Payment</h2>
+        <form class="payment-form">
+            <label for="name">Name on Card</label>
+            <input type="text" id="name" placeholder="Joey Tribbiani" required>
+            <label for="card-number">Card Number</label>
+            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+            <label for="expiry">Expiry Date</label>
+            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" placeholder="123" maxlength="3" required>
+            <div class="payment-summary">
+                <p>Subtotal: $<span id="subtotal"></span></p>
+                <p>Tax (5%): $<span id="tax"></span></p>
+                <p>Discount: $<span id="discountAmount"></span></p>
+                <p><strong>Total: $<span id="total"></span></strong></p>
+            </div>
+            <button type="button" class="pay-btn" id="payBtn">Pay Now</button>
+        </form>
+        <div class="confirmation" id="confirmation">
+            <p>Payment Successful! Thank you for your purchase.</p>
+            <img id="successGif" src="" alt="Success GIF">
+        </div>
+    </div>
+    <script>
+        // Retrieve the subtotal from cart.html (floating point supported, defaults to 5000.00 if not set)
+        const subtotalFromCart = parseFloat(localStorage.getItem('totalAmount')) || 5000.00;
+        // Compute tax as 5% of subtotal
+        const tax = subtotalFromCart * 0.05;
+        let total = subtotalFromCart + tax;
+
+        // Retrieve the discount percent from quiz.html (if available)
+        const discountValue = localStorage.getItem('discount');
+        const discountPercent = discountValue !== null ? parseFloat(discountValue) : 0;
+        let discountAmount = 0;
+        if (discountPercent > 0) {
+            discountAmount = (total * discountPercent) / 100;
+            total = total - discountAmount;
+        }
+
+        // Update the payment summary with dynamic values
+        document.getElementById('subtotal').textContent = subtotalFromCart.toFixed(2);
+        document.getElementById('tax').textContent = tax.toFixed(2);
+        document.getElementById('discountAmount').textContent = discountAmount.toFixed(2);
+        document.getElementById('total').textContent = total.toFixed(2);
+
+        // Simulate payment processing on button click
+        const payBtn = document.getElementById('payBtn');
+        const confirmation = document.getElementById('confirmation');
+        const successGif = document.getElementById('successGif');
+
+        payBtn.addEventListener('click', function () {
+            payBtn.disabled = true;
+            payBtn.textContent = 'Processing...';
+            setTimeout(() => {
+                // Clear the cart: remove the cart data and reset cart count
+                localStorage.removeItem('centralPerkCart');
+                localStorage.setItem('cartCount', '0');
+                localStorage.removeItem('totalAmount');
+
+                payBtn.style.display = 'none';
+                confirmation.style.display = 'block';
+                successGif.src = "./images/success.gif"; // Adjust path if needed
+            }, 2000);
+        });
+    </script>
+</body>
+
+</html>

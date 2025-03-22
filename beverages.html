@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Beverages</title>
+  <!-- Google Fonts for a modern look -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #4a2c23);
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Fade-in animation for item wrappers */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Grid layout for items */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    /* Each beverage item card */
+    .item-wrapper {
+      position: relative;
+      text-align: center;
+      background: #fff;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeIn 0.6s ease both;
+    }
+
+    .item-wrapper:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Circular image container */
+    .item-circle {
+      display: block;
+      width: 150px;
+      height: 150px;
+      margin: 0 auto;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .item-circle:hover {
+      transform: scale(1.05);
+    }
+
+    /* Beverage image */
+    .item-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .item-image:hover {
+      transform: scale(1.1);
+    }
+
+    /* Beverage label */
+    .item-label {
+      margin-top: 15px;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    /* Price styling */
+    .item-price {
+      font-size: 16px;
+      margin: 5px 0;
+      color: #555;
+    }
+
+    /* Cart container styles */
+    .item-cart-container {
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .item-quantity {
+      width: 50px;
+      text-align: center;
+      padding: 0.2rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .add-to-cart-btn {
+      background: #2c1810;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .add-to-cart-btn:hover {
+      background: #4a2c23;
+    }
+
+    /* Heart icon styles */
+    .heart-icon {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 26px;
+      color: white;
+      background-color: #4a2c23;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+    }
+
+    .heart-icon.favorited {
+      color: red;
+      background-color: #fff;
+    }
+
+    .heart-icon:hover {
+      transform: scale(1.3);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="items-grid">
+      <!-- Example Item: Juice -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/orange.jpeg" alt="Orange Juice" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="juice1" data-name="Orange Juice" data-price="3.50">&#x2665;</div>
+        <div class="item-label">Orange Juice</div>
+        <div class="item-price">$3.50</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Example Item: Iced Tea -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/icedTea.jpeg" alt="Iced Tea" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="icedTea1" data-name="Iced Tea" data-price="4.00">&#x2665;</div>
+        <div class="item-label">Iced Tea</div>
+        <div class="item-price">$4.00</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Example Item: Lemonade -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/lemonade.jpeg" alt="Lemonade" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="lemonade1" data-name="Lemonade" data-price="3.75">&#x2665;</div>
+        <div class="item-label">Lemonade</div>
+        <div class="item-price">$3.75</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Example Item: Smoothie -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/smoothie.jpeg" alt="Smoothie" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="smoothie1" data-name="Smoothie" data-price="5.00">&#x2665;</div>
+        <div class="item-label">Smoothies</div>
+        <div class="item-price">$5.00</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 1: Beer -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/beer.jpg" alt="Beer" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="beer1" data-name="Beer" data-price="2.50">&#x2665;</div>
+        <div class="item-label">Beer</div>
+        <div class="item-price">$2.50</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 2: Whiskey -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/whiskey.jpg" alt="Whiskey" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="whiskey1" data-name="Whiskey" data-price="2.00">&#x2665;</div>
+        <div class="item-label">Whiskey</div>
+        <div class="item-price">$2.00</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 3: Milkshake -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/milkshake.jpg" alt="Milkshake" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="milkshake1" data-name="Milkshake" data-price="4.50">&#x2665;</div>
+        <div class="item-label">Milkshake</div>
+        <div class="item-price">$4.50</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 4: Soda -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/soda.jpg" alt="Soda" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="soda1" data-name="Soda" data-price="1.75">&#x2665;</div>
+        <div class="item-label">Soda</div>
+        <div class="item-price">$1.75</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 5: Water -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/water.jpeg" alt="Water" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="water1" data-name="Water" data-price="1.00">&#x2665;</div>
+        <div class="item-label">Water</div>
+        <div class="item-price">$1.00</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Another Juice Example: Strawberry Juice -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="https://cdn3.foodviva.com/static-content/food-images/juice-recipes/strawberry-juice-recipe/strawberry-juice-recipe.jpg" alt="Strawberry Juice" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="juice2" data-name="Strawberry Juice" data-price="3.50">&#x2665;</div>
+        <div class="item-label">Strawberry Juice</div>
+        <div class="item-price">$3.50</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 6: Energy Drink -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/energydrink.jpg" alt="Energy Drink" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="energy1" data-name="Energy Drink" data-price="3.25">&#x2665;</div>
+        <div class="item-label">Energy Drink</div>
+        <div class="item-price">$3.25</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 7: Hot Chocolate -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/hotChocolate.jpg" alt="Hot Chocolate" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="hotChoc1" data-name="Hot Chocolate" data-price="3.75">&#x2665;</div>
+        <div class="item-label">Hot Chocolate</div>
+        <div class="item-price">$3.75</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 8: Rum -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/rum.jpg" alt="Rum" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="rum1" data-name="Rum" data-price="3.50">&#x2665;</div>
+        <div class="item-label">Rum</div>
+        <div class="item-price">$3.50</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 9: Frappe -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/frappe.jpg" alt="Frappe" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="frappe1" data-name="Frappe" data-price="4.00">&#x2665;</div>
+        <div class="item-label">Frappe</div>
+        <div class="item-price">$4.00</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+
+      <!-- Item 10: Wine -->
+      <div class="item-wrapper">
+        <div class="item-circle">
+          <img src="images/wine.webp" alt="Wine" class="item-image">
+        </div>
+        <div class="heart-icon" data-id="wine1" data-name="Wine" data-price="2.25">&#x2665;</div>
+        <div class="item-label">Wine</div>
+        <div class="item-price">$2.25</div>
+        <div class="item-cart-container">
+          <input type="number" class="item-quantity" value="0" min="0">
+          <button class="add-to-cart-btn">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle favorite status and update localStorage
+    function toggleFavourite(icon, item) {
+      let favourites = JSON.parse(localStorage.getItem('centralPerkFavorites')) || [];
+      const existingIndex = favourites.findIndex(fav => fav.id === item.id);
+      if (existingIndex === -1) {
+        favourites.push(item);
+        icon.classList.add('favorited');
+        console.log(item.name + " added to favorites.");
+      } else {
+        favourites.splice(existingIndex, 1);
+        icon.classList.remove('favorited');
+        console.log(item.name + " removed from favorites.");
+      }
+      localStorage.setItem('centralPerkFavorites', JSON.stringify(favourites));
+    }
+
+    // Update heart icons on page load based on stored favorites
+    function updateFavoriteHearts() {
+      const favourites = JSON.parse(localStorage.getItem('centralPerkFavorites')) || [];
+      document.querySelectorAll('.heart-icon').forEach(icon => {
+        const id = icon.getAttribute('data-id');
+        if (favourites.some(fav => fav.id === id)) {
+          icon.classList.add('favorited');
+        } else {
+          icon.classList.remove('favorited');
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Set up favorite toggling
+      document.querySelectorAll('.heart-icon').forEach(icon => {
+        icon.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const id = this.getAttribute('data-id');
+          const name = this.getAttribute('data-name');
+          const price = parseFloat(this.getAttribute('data-price'));
+          toggleFavourite(this, { id, name, price });
+        });
+      });
+
+      // Add to Cart button handling
+      document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function () {
+          const wrapper = button.closest('.item-wrapper');
+          const quantityInput = wrapper.querySelector('.item-quantity');
+          const quantity = parseInt(quantityInput.value);
+          if (quantity > 0) {
+            const heartIcon = wrapper.querySelector('.heart-icon');
+            const id = heartIcon.getAttribute('data-id');
+            const name = heartIcon.getAttribute('data-name');
+            const price = parseFloat(heartIcon.getAttribute('data-price'));
+
+            let cart = JSON.parse(localStorage.getItem('centralPerkCart')) || [];
+            const existingIndex = cart.findIndex(item => item.id === id);
+            if (existingIndex !== -1) {
+              cart[existingIndex].quantity += quantity;
+            } else {
+              cart.push({ id, name, price, quantity });
+            }
+            localStorage.setItem('centralPerkCart', JSON.stringify(cart));
+
+            // Update global cart count if needed
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            localStorage.setItem('cartCount', totalCount.toString());
+
+            // Visual feedback: change button text to "Added!"
+            const originalText = button.textContent;
+            button.textContent = "Added!";
+
+            // Reset quantity input to 0
+            quantityInput.value = 0;
+
+            // Removed redirection so the page does not navigate away.
+            setTimeout(() => {
+              // Optionally, revert button text if staying on page:
+              button.textContent = originalText;
+            }, 1000);
+          }
+        });
+      });
+
+      updateFavoriteHearts();
+    });
+  </script>
+</body>
+
+</html>
